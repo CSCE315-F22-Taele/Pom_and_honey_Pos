@@ -461,7 +461,18 @@ public class demo extends JFrame {
      * shows the manager screen
      */
     public static void manager_screen() {
+        JFrame frame = new JFrame("POS");
+        Color background = new Color(47, 79, 79);
+        frame.setBackground(background);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        JButton viewItems = new JButton("View Items");
+
+        frame.add(viewItems);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true); // making the frame visible
     }
 
     public static void starter_menu() {
