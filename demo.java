@@ -2,6 +2,10 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.event.*;
 import java.awt.*;
+import java.sql.*;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * @author Nick, Ismat, Nebiyou, Aadith
@@ -108,16 +112,16 @@ public class demo extends JFrame {
         });
         addItem.setBounds(350, 50, 300, 100);
 
-        JButton seeInventory = new JButton("See Inventory");
-        seeInventory.addActionListener(new ActionListener() {
+        JButton viewInventory = new JButton("View Inventory");
+        viewInventory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // see inventory screen;
                 frame.setVisible(false);
-
+                
             }
         });
-        seeInventory.setBounds(675, 50, 300, 100);
+        viewInventory.setBounds(675, 50, 300, 100);
 
         JButton addInventory = new JButton("Add to Inventory");
         addInventory.addActionListener(new ActionListener() {
@@ -141,7 +145,7 @@ public class demo extends JFrame {
 
         frame.add(takeOrder);
         frame.add(addItem);
-        frame.add(seeInventory);
+        frame.add(viewInventory);
         frame.add(addInventory);
         frame.add(exit);
 
@@ -187,6 +191,62 @@ public class demo extends JFrame {
         frame.setSize(1000, 1000);
         frame.setLayout(null); // using no layout managers
         frame.setVisible(true); // making the frame visible
+    }
+
+    public static int view_inventory() {
+        JFrame frame = new JFrame("VIEW INVENTORY");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        Connection conn = null;
+        String teamNumber = "14";
+        String sectionNumber = "912";
+        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+        dbSetup myCredentials = new dbSetup();
+
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return 1;
+        }
+        System.out.println("Opened database successfully");
+
+        // ArrayList<String> items = new ArrayList<>();
+        // ArrayList<Integer> count = new ArrayList<>();
+        // ArrayList<Map.Entry<String, Integer>> items = new ArrayList<>();
+        Vector<Vector<String>> rowData = new Vector<>();
+        try {
+            String sqlQuery = "";
+
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Entree Items"));
+                entry.add(result.getString("Entree Inventory"));
+                rowData.add(entry);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return 2;
+        }
+        System.out.println("Passed query successfully");
+        
+        Vector<String> columnNames = new Vector<>();
+        JTable table = new JTable(rowData, columnNames);
+
+
+        try {
+            conn.close();
+            System.out.println("Connection Closed.");
+        } catch (Exception e) {
+            System.out.println("Connection NOT Closed.");
+        }
+
+        return 0;
     }
 
     /**
