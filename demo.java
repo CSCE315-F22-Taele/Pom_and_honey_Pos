@@ -117,6 +117,7 @@ public class demo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // see inventory screen;
+                view_inventory();
                 frame.setVisible(false);
                 
             }
@@ -219,7 +220,7 @@ public class demo extends JFrame {
         // ArrayList<Map.Entry<String, Integer>> items = new ArrayList<>();
         Vector<Vector<String>> rowData = new Vector<>();
         try {
-            String sqlQuery = "";
+            String sqlQuery = "select * from \"Entrees\"";
 
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlQuery);
@@ -235,10 +236,6 @@ public class demo extends JFrame {
         }
         System.out.println("Passed query successfully");
         
-        Vector<String> columnNames = new Vector<>();
-        JTable table = new JTable(rowData, columnNames);
-
-
         try {
             conn.close();
             System.out.println("Connection Closed.");
@@ -246,7 +243,23 @@ public class demo extends JFrame {
             System.out.println("Connection NOT Closed.");
         }
 
+        
+        Vector<String> columnNames = new Vector<>();
+        columnNames.add("Item");
+        columnNames.add("Stock");
+        JTable table = new JTable(rowData, columnNames);
+        table.setBounds(50, 50, 1000, 1000);
+        frame.add(table);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null);
+        frame.setVisible(true);
+
+
         return 0;
+    }
+    public static void addInventory(){
+        
     }
 
     /**
