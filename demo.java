@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.event.*;
 import java.awt.*;
+
 /**
  * @author Nick, Ismat, Nebiyou, Aadith
  */
@@ -12,9 +13,9 @@ public class demo extends JFrame {
     public static order theOrder = new order();
 
     /**
-     * @param 
+     * @param
      * @return
-     * Opens welcome screen that starts our gui
+     *         Opens welcome screen that starts our gui
      */
     public static void welcome() { // this screen is what the user is greeted with upon starting the gui
         JFrame frame = new JFrame("POS");
@@ -22,41 +23,131 @@ public class demo extends JFrame {
         frame.setBackground(background);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JButton button1 = new JButton("Take an Order");// if pressed pos displays menu_screen
-        button1.setBounds(50, 50, 825, 200);
-        button1.setFont(new Font("Arial", Font.BOLD, 40));
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                entree_screen();
-                frame.setVisible(false);
-            }
-        });
-        Color c1 = new Color(0, 255, 0);
-        button1.setBackground(c1);
-
-        JButton button2 = new JButton("Manage Inventory");// if pressed the pos goes to the manager screen
-        button2.setBounds(50, 450, 825, 200); // x axis, y axis, width, height
-        button2.setFont(new Font("Arial", Font.BOLD, 40));
-        button2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                manager_screen();
-                frame.setVisible(false);
-            }
-        });
+        JLabel logInLabel = new JLabel("Pom & Honey POS Login");// if pressed the pos goes to the manager screen
+        logInLabel.setBounds(50, 450, 825, 200); // x axis, y axis, width, height
+        logInLabel.setFont(new Font("Arial", Font.BOLD, 40));
         Color c2 = new Color(255, 0, 0);
-        button2.setBackground(c2);
+        logInLabel.setBackground(c2);
 
-        frame.add(button1);
-        frame.add(button2);
+        JLabel label = new JLabel("Please enter your ID: ");
+        label.setBounds(100, 100, 150, 150);
+        label.setPreferredSize(new Dimension(200, 100));
+        
+        JTextField idField = new JTextField(0);
+        idField.setBounds(100, 300, 300, 100);
+        idField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (((c < '1') || (c > '6')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                    e.consume(); // if it's not a number, ignore the event
+                }
+            }
+        });
+
+        JButton submitIDButton = new JButton("Submit");
+        submitIDButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (idField.getText() == "1") {
+                    manager_view();
+                    frame.setVisible(false);
+                }
+                else {
+                    server_view();
+                    frame.setVisible(false);
+                }
+                    
+            }
+        });
+        submitIDButton.setBounds(400,400,100,100);
+
+        frame.add(logInLabel);
+        frame.add(idField);
+        frame.add(submitIDButton);
 
         frame.setSize(1000, 1000);
         frame.setLayout(null); // using no layout managers
         frame.setVisible(true); // making the frame visible
-
     }
-    
+
+    /**
+     * shows the manager screen
+     */
+    public static void manager_view() {
+        JFrame frame = new JFrame("MANAGER VIEW");
+        Color background = new Color(47, 79, 79);
+        frame.setBackground(background);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JButton takeOrder = new JButton("Take Order");
+        takeOrder.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entree_screen();
+                frame.setVisible(false);
+                    
+            }
+        });
+        takeOrder.setBounds(100,100,100,100);
+
+        JButton addItem = new JButton("Add Seasonal Item");
+        addItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //entree_screen();
+                frame.setVisible(false);
+                    
+            }
+        });
+        addItem.setBounds(200,200,100,100);
+
+        JButton seeInventory = new JButton("See Inventory");
+        seeInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //entree_screen();
+                frame.setVisible(false);
+                    
+            }
+        });
+        seeInventory.setBounds(300,300,100,100);
+        
+        frame.add(takeOrder);
+        frame.add(addItem);
+        frame.add(seeInventory);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true); // making the frame visible
+    }
+
+    /** Shows server view
+    *
+     */
+    public static void server_view() {
+        JFrame frame = new JFrame("SERVER VIEW");
+        Color background = new Color(47, 79, 79);
+        frame.setBackground(background);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JButton takeOrder = new JButton("Take Order");
+        takeOrder.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entree_screen();
+                frame.setVisible(false);
+                    
+            }
+        });
+        takeOrder.setBounds(100,100,100,100);
+        
+        frame.add(takeOrder);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true); // making the frame visible
+    }
+
     /**
      * Loads the entree screen
      */
@@ -129,7 +220,7 @@ public class demo extends JFrame {
                 protein = 1; // index 0
             }
         });
-        JButton vegMedPro = new JButton("Veg Medley"); // set it to where some entree has to have been selected
+        JButton vegMedPro = new JButton("Vegetable Medley"); // set it to where some entree has to have been selected
         vegMedPro.setBounds(375, 250, 150, 50);
         vegMedPro.addActionListener(new ActionListener() {
             @Override
@@ -138,7 +229,7 @@ public class demo extends JFrame {
             }
         });
 
-        JButton mBallsPro = new JButton("Meat Bol"); // set it to where some entree has to have been selected
+        JButton mBallsPro = new JButton("Meat Ball"); // set it to where some entree has to have been selected
         mBallsPro.setBounds(550, 250, 150, 50);
         mBallsPro.addActionListener(new ActionListener() {
             @Override
@@ -215,6 +306,7 @@ public class demo extends JFrame {
 
         frame.setVisible(true);
     }
+
     /**
      * shows the topping choice menu
      */
@@ -457,22 +549,12 @@ public class demo extends JFrame {
         frame.setLayout(null); // using no layout managers
         frame.setVisible(true);
     }
-    /**
-     * shows the manager screen
-     */
-    public static void manager_screen() {
-        JFrame frame = new JFrame("POS");
-        Color background = new Color(47, 79, 79);
-        frame.setBackground(background);
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JButton viewItems = new JButton("View Items");
+    
+    
 
-        frame.add(viewItems);
-
-        frame.setSize(1000, 1000);
-        frame.setLayout(null); // using no layout managers
-        frame.setVisible(true); // making the frame visible
+    public static void view_items() {
+        
     }
 
     public static void starter_menu() {
