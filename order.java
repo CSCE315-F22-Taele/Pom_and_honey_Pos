@@ -78,25 +78,14 @@ public class order {
     // "Insert INTO \"Order\" (\"Date\", \"Server ID\", \"Total Amount\", \"Entree
     // ID\", \"Topping IDs\", \"Dressing ID\", \"Starter ID\", \"Drinks ID\") values
     // ('22-08-2022', 1, 22.46, 1, ARRAY[1,2,3,5], 1,2,4);";
-    public String sqlQuery() {
+    public String sqlQuery(int employeeID) {
         String sqlInput = "INSERT INTO \"Order\" (\"Date\", \"Server ID\", \"Total Amount\", \"Entree ID\", \"Topping IDs\", \"Dressing ID\", \"Starter ID\", \"Drinks ID\" ) values ('"
-                + LocalDate.now() + "',1," + getTotal() + "," + entreeId + ", " + orderEntree.toInputString()
+                + LocalDate.now() + "', "+ employeeID +"," + getTotal() + "," + entreeId + ", " + orderEntree.toInputString()
                 + orderStarter.toInputString() + orderDrink.toInputString() + ")" + ";";
         // System.out.println(sqlInput); //remove once we can send to table!
         return sqlInput;
     }
 
     public static void main(String[] args) {
-        order neworder = new order(1);
-        // System.out.println(neworder.sqlQuery());
-        neworder.addDrink(2);
-        neworder.addStarter(2);
-        neworder.addTopping(4);
-        neworder.addTopping(2);
-        neworder.addTopping(3);
-        neworder.addTopping(6);
-        neworder.addDressing(3);
-
-        System.out.println(neworder.sqlQuery());
     }
 }

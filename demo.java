@@ -7,15 +7,13 @@ import java.awt.*;
  * @author Nick, Ismat, Nebiyou, Aadith
  */
 public class demo extends JFrame {
+    public static int employeeID;
     public static int type;
     public static int protein;
-    public static int[] toppings = { -1, -1, -1, -1 };
     public static order theOrder = new order();
 
     /**
-     * @param
-     * @return
-     *         Opens welcome screen that starts our gui
+     * Opens welcome screen that starts our gui
      */
     public static void welcome() { // this screen is what the user is greeted with upon starting the gui
         JFrame frame = new JFrame("POS");
@@ -24,17 +22,18 @@ public class demo extends JFrame {
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JLabel logInLabel = new JLabel("Pom & Honey POS Login");// if pressed the pos goes to the manager screen
-        logInLabel.setBounds(50, 450, 825, 200); // x axis, y axis, width, height
+        logInLabel.setBounds(210, 100, 1000, 350); // x axis, y axis, width, height
         logInLabel.setFont(new Font("Arial", Font.BOLD, 40));
         Color c2 = new Color(255, 0, 0);
         logInLabel.setBackground(c2);
 
-        JLabel label = new JLabel("Please enter your ID: ");
-        label.setBounds(100, 100, 150, 150);
-        label.setPreferredSize(new Dimension(200, 100));
-        
+        JLabel label = new JLabel("Enter your ID: ");
+        label.setBounds(120, 325, 150, 100);
+        label.setFont(new Font("Arial", Font.BOLD, 20));
+        // label.setPreferredSize(new Dimension(200, 50));
+
         JTextField idField = new JTextField(0);
-        idField.setBounds(100, 300, 300, 100);
+        idField.setBounds(285, 350, 300, 50);
         idField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
@@ -48,22 +47,30 @@ public class demo extends JFrame {
         submitIDButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (idField.getText() == "1") {
+                if (idField.getText().isEmpty()) {
+                    return;
+                }
+                if (idField.getText().charAt(0) == '1') {
+                    employeeID = 1;
                     manager_view();
                     frame.setVisible(false);
-                }
-                else {
+                } else if (idField.getText().charAt(0) >= '2' || idField.getText().charAt(0) <= '6') {
                     server_view();
                     frame.setVisible(false);
+                    employeeID = Integer.parseInt(idField.getText());
+                } else {
+                    idField.setText("");
+                    return;
                 }
-                    
+
             }
         });
-        submitIDButton.setBounds(400,400,100,100);
+        submitIDButton.setBounds(610, 350, 150, 50);
 
         frame.add(logInLabel);
         frame.add(idField);
         frame.add(submitIDButton);
+        frame.add(label);
 
         frame.setSize(1000, 1000);
         frame.setLayout(null); // using no layout managers
@@ -71,7 +78,7 @@ public class demo extends JFrame {
     }
 
     /**
-     * shows the manager screen
+     * Shows the manager screen after log-in
      */
     public static void manager_view() {
         JFrame frame = new JFrame("MANAGER VIEW");
@@ -85,44 +92,67 @@ public class demo extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 entree_screen();
                 frame.setVisible(false);
-                    
+
             }
         });
-        takeOrder.setBounds(100,100,100,100);
+        takeOrder.setBounds(25, 50, 300, 100);
 
         JButton addItem = new JButton("Add Seasonal Item");
         addItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //entree_screen();
+                // add seasonal item screen;
                 frame.setVisible(false);
-                    
+
             }
         });
-        addItem.setBounds(200,200,100,100);
+        addItem.setBounds(350, 50, 300, 100);
 
         JButton seeInventory = new JButton("See Inventory");
         seeInventory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //entree_screen();
+                // see inventory screen;
                 frame.setVisible(false);
-                    
+
             }
         });
-        seeInventory.setBounds(300,300,100,100);
-        
+        seeInventory.setBounds(675, 50, 300, 100);
+
+        JButton addInventory = new JButton("Add to Inventory");
+        addInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // add to inventory screen;
+                frame.setVisible(false);
+            }
+        });
+        addInventory.setBounds(25, 175, 300, 100);
+
+        JButton exit = new JButton("Exit to Main Screen");
+        exit.setBounds(25, 700, 425, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcome();
+                frame.setVisible(false);
+            }
+        });
+
         frame.add(takeOrder);
         frame.add(addItem);
         frame.add(seeInventory);
+        frame.add(addInventory);
+        frame.add(exit);
 
         frame.setSize(1000, 1000);
         frame.setLayout(null); // using no layout managers
         frame.setVisible(true); // making the frame visible
     }
 
-    /** Shows server view
-    *
+    /**
+     * Shows the server view screen after log-in
+     *
      */
     public static void server_view() {
         JFrame frame = new JFrame("SERVER VIEW");
@@ -136,12 +166,23 @@ public class demo extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 entree_screen();
                 frame.setVisible(false);
-                    
+
             }
         });
-        takeOrder.setBounds(100,100,100,100);
-        
+        takeOrder.setBounds(100, 100, 100, 100);
+
+        JButton exit = new JButton("Exit to Main Screen");
+        exit.setBounds(25, 700, 425, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcome();
+                frame.setVisible(false);
+            }
+        });
+
         frame.add(takeOrder);
+        frame.add(exit);
 
         frame.setSize(1000, 1000);
         frame.setLayout(null); // using no layout managers
@@ -550,13 +591,9 @@ public class demo extends JFrame {
         frame.setVisible(true);
     }
 
-    
-    
-
-    public static void view_items() {
-        
-    }
-
+    /**
+     * Shows the starter menu
+     */
     public static void starter_menu() {
 
         JFrame frame = new JFrame("Starters & Drinks");
@@ -692,6 +729,9 @@ public class demo extends JFrame {
         frame.setVisible(true); // making the frame visible
     }
 
+    /**
+     * Places the order and acts as the payment screen
+     */
     public static void payment_page() {
         JFrame frame = new JFrame("PAYMENT");
         Color background = new Color(47, 79, 79);
@@ -705,9 +745,11 @@ public class demo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // sql input statement query
-                String sqlQuery = theOrder.sqlQuery();
+                String sqlQuery = theOrder.sqlQuery(employeeID);
+
                 // here's where we call the jdbc page
                 jdbcpostgreSQL.orderQuery(sqlQuery);
+
                 // go back to home page
                 welcome();
                 frame.setVisible(false);
