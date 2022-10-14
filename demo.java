@@ -22,7 +22,7 @@ public class demo extends JFrame {
      * Opens welcome screen that starts our gui
      */
     public static void welcome() { // this screen is what the user is greeted with upon starting the gui
-        JFrame frame = new JFrame("POS");
+        JFrame frame = new JFrame("POS Log-In");
         Color background = new Color(47, 79, 79);
         frame.setBackground(background);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -185,7 +185,7 @@ public class demo extends JFrame {
     }
 
     public static int view_inventory() {
-        JFrame frame = new JFrame("VIEW INVENTORY");
+        JFrame frame = new JFrame("VIEW/EDIT INVENTORY");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         Connection conn = null;
@@ -427,7 +427,7 @@ public class demo extends JFrame {
     public static void entree_screen() {
         // int entreeId;
 
-        JFrame frame = new JFrame("ORDER");
+        JFrame frame = new JFrame("ORDER: ENTREES");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JLabel label1 = new JLabel("Choose An Entree");
@@ -588,7 +588,7 @@ public class demo extends JFrame {
         int height = 50;
         int padding = 28;
 
-        JFrame frame = new JFrame("Toppings & Dressings");
+        JFrame frame = new JFrame("ORDER: TOPPINGS");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JLabel label1 = new JLabel("Choose Toppings: ");
@@ -828,7 +828,7 @@ public class demo extends JFrame {
      */
     public static void starter_menu() {
 
-        JFrame frame = new JFrame("Starters & Drinks");
+        JFrame frame = new JFrame("ORDER: STARTERS & DRINKS");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JLabel starterLabel = new JLabel("Choose Starter: ");
