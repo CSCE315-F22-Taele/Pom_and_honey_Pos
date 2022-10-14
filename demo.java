@@ -1,10 +1,12 @@
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.Color;
 import java.awt.event.*;
 import java.awt.*;
 import java.sql.*;
-import java.util.Map;
-import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -34,7 +36,6 @@ public class demo extends JFrame {
         JLabel label = new JLabel("Enter your ID: ");
         label.setBounds(120, 325, 150, 100);
         label.setFont(new Font("Arial", Font.BOLD, 20));
-        // label.setPreferredSize(new Dimension(200, 50));
 
         JTextField idField = new JTextField(0);
         idField.setBounds(285, 350, 300, 50);
@@ -110,8 +111,8 @@ public class demo extends JFrame {
 
             }
         });
-        addItem.setBounds(350, 50, 300, 100);
-
+        addItem.setBounds(675, 50, 300, 100);
+        
         JButton viewInventory = new JButton("View Inventory");
         viewInventory.addActionListener(new ActionListener() {
             @Override
@@ -122,17 +123,7 @@ public class demo extends JFrame {
                 
             }
         });
-        viewInventory.setBounds(675, 50, 300, 100);
-
-        JButton addInventory = new JButton("Add to Inventory");
-        addInventory.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // add to inventory screen;
-                frame.setVisible(false);
-            }
-        });
-        addInventory.setBounds(25, 175, 300, 100);
+        viewInventory.setBounds(350, 50, 300, 100);
 
         JButton exit = new JButton("Exit to Main Screen");
         exit.setBounds(25, 700, 425, 100);
@@ -145,9 +136,8 @@ public class demo extends JFrame {
         });
 
         frame.add(takeOrder);
-        frame.add(addItem);
+        // frame.add(addItem);
         frame.add(viewInventory);
-        frame.add(addInventory);
         frame.add(exit);
 
         frame.setSize(1000, 1000);
@@ -203,63 +193,232 @@ public class demo extends JFrame {
         String sectionNumber = "912";
         String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
         String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
-        dbSetup myCredentials = new dbSetup();
 
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
             return 1;
         }
-        System.out.println("Opened database successfully");
+        // System.out.println("Opened database successfully");
 
-        // ArrayList<String> items = new ArrayList<>();
-        // ArrayList<Integer> count = new ArrayList<>();
-        // ArrayList<Map.Entry<String, Integer>> items = new ArrayList<>();
-        Vector<Vector<String>> rowData = new Vector<>();
+        Vector<Vector<String>> inventoryTable = new Vector<>();
+        int[] partitions = new int[4];
+        int line = 0;
         try {
             String sqlQuery = "select * from \"Entrees\"";
-
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlQuery);
             while (result.next()) {
                 Vector<String> entry = new Vector<>();
                 entry.add(result.getString("Entree Items"));
                 entry.add(result.getString("Entree Inventory"));
-                rowData.add(entry);
+                inventoryTable.add(entry);
+                line++;
+            }
+            partitions[0] = line;
+
+            sqlQuery = "select * from \"Dressings\" where \"Dressing Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Dressing Item"));
+                entry.add(result.getString("Dressing Inventory"));
+                inventoryTable.add(entry);
+                line++;
+            }
+            partitions[1] = line;
+
+            sqlQuery = "select * from \"Drinks\" where \"Drink Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Drink Item"));
+                entry.add(result.getString("Drink Inventory"));
+                inventoryTable.add(entry);
+                line++;
+            }
+            partitions[2] = line;
+
+            sqlQuery = "select * from \"Starters\" where \"Starter Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Starter Item"));
+                entry.add(result.getString("Starter Inventory"));
+                inventoryTable.add(entry);
+                line++;
+            }
+            partitions[3] = line;
+
+            sqlQuery = "select * from \"Toppings\" where \"Topping Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Topping Item"));
+                entry.add(result.getString("Topping Inventory"));
+                inventoryTable.add(entry);
             }
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
             return 2;
         }
-        System.out.println("Passed query successfully");
-        
+        // System.out.println("Passed query successfully");
+
         try {
             conn.close();
-            System.out.println("Connection Closed.");
+            // System.out.println("Connection Closed.");
         } catch (Exception e) {
-            System.out.println("Connection NOT Closed.");
+            // System.out.println("Connection NOT Closed.");
         }
-
         
+        Vector<Vector<String>> changes = new Vector<>();
+        JButton exit = new JButton("Exit to Manager Screen");
+        exit.setBounds(0, 800, 500, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                manager_view();
+                frame.setVisible(false);
+            }
+        });
+        JButton update = new JButton("Update inventory changes");
+        update.setBounds(500, 800, 500, 100);
+        update.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // System.out.println("Update");
+                update_inventory(changes);
+            }
+        });
+
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Item");
         columnNames.add("Stock");
-        JTable table = new JTable(rowData, columnNames);
-        table.setBounds(50, 50, 1000, 1000);
-        frame.add(table);
+
+        DefaultTableModel tableModel = new DefaultTableModel(inventoryTable, columnNames);
+        tableModel.addTableModelListener(new TableModelListener() {
+    
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() != e.UPDATE) {
+                    return;
+                }
+
+                int colChanged = e.getColumn();
+                if (colChanged == 0) {
+                    return;
+                }
+                
+                int rowChanged = e.getFirstRow();
+                String tblName = "";
+                if (rowChanged >= partitions[3]) {
+                    tblName = "Toppings";
+                } else if (rowChanged >= partitions[2]) {
+                    tblName = "Starters";
+                } else if (rowChanged >= partitions[1]) {
+                    tblName = "Drinks";
+                } else if (rowChanged >= partitions[0]) {
+                    tblName = "Dressings";
+                } else {
+                    tblName = "Entrees";
+                }
+                Vector<String> entryChange = new Vector<>();
+                String item = inventoryTable.get(rowChanged).get(0);
+                String stock = inventoryTable.get(rowChanged).get(1);
+                entryChange.add(tblName);
+                entryChange.add(item);
+                entryChange.add(stock);
+                
+                // System.out.println(tblName + " " + inventoryTable.get(rowChanged).get(0) + " " + inventoryTable.get(rowChanged).get(1));
+                
+                changes.add(entryChange);
+            }
+        }); 
+        JTable table = new JTable(tableModel);
+        // table.setBounds(50, 50, 1000, 1000);
+        
+
+
+        JScrollPane sp = new JScrollPane(table);
+        sp.setBounds(0, 0, 1000, 1000);
+
+        frame.add(exit);
+        frame.add(update);
+        frame.add(sp);
 
         frame.setSize(1000, 1000);
         frame.setLayout(null);
         frame.setVisible(true);
 
-
         return 0;
     }
-    public static void addInventory(){
-        
+
+    public static void update_inventory(Vector<Vector<String>> changes) {
+        Connection conn = null;
+        String teamNumber = "14";
+        String sectionNumber = "912";
+        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+
+        // Connecting to the database
+        try {
+            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+
+        try {
+           
+            for (int r = 0; r < changes.size(); r++) {
+                String tblName = changes.get(r).get(0);
+                String item = changes.get(r).get(1);
+                String stock = changes.get(r).get(2);
+
+                String sqlQuery = "";
+                Statement stmt = conn.createStatement();
+                
+                try {
+                    if (Integer.parseInt(stock) < 0) {
+                        continue;
+                    }
+                }
+                catch (NumberFormatException e) {
+                    continue;
+                }
+                
+                if (tblName.equals("Entrees")) {
+                    sqlQuery = "UPDATE \"Entrees\" SET \"Entree Inventory\"=" + stock + " WHERE \"Entree Items\"='" + item + "'";
+                } else if (tblName.equals("Dressings")) {
+                    sqlQuery = "UPDATE \"Dressings\" SET \"Dressing Inventory\"=" + stock + " WHERE \"Dressing Item\"='" + item + "'";
+                } else if (tblName.equals("Drinks")) {
+                    sqlQuery = "UPDATE \"Drinks\" SET \"Drink Inventory\"=" + stock + " WHERE \"Drink Item\"='" + item + "'";
+                } else if (tblName.equals("Starters")) {
+                    sqlQuery = "UPDATE \"Starters\" SET \"Starter Inventory\"=" + stock + " WHERE \"Starter Item\"='" + item + "'";
+                } else if (tblName.equals("Toppings")) {
+                    sqlQuery = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
+                }
+                
+                ResultSet result = stmt.executeQuery(sqlQuery);
+                // System.out.println(sqlQuery);
+            }
+        } catch (Exception e) {
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        try {
+            conn.close();
+            // System.out.println("Connection Closed.");
+        } catch (Exception e) {
+            // System.out.println("Connection NOT Closed.");
+        }
     }
 
     /**
