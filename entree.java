@@ -4,7 +4,7 @@ public class entree {
     private String type;
     private int typeId;
     private String proteins;
-    private int[] toppings = new int[4];
+    private int[] toppings = {0, 0, 0, 0};
     private int numToppings;
     private int dressing;
 
@@ -12,6 +12,9 @@ public class entree {
             "Roasted Cauliflower", "Tomato-onion Salad", "Kalamata Olives", "Roasted Peppers", "Red Cabbage Slaw" };
     private String[] types = { "Grain Bowl", "Salad", "Pita", "Greens and Grains", "Gyro" };
     private String[] proteinTypes = { "Gyro", "Falafel", "Vegetable Medley", "Meatballs", "Chicken" };
+    
+    private String seasonalProtein="";
+    private String seasonalType="";
 
     public entree(int inType) { // entree orders should start with type, rest should be modified with sets as
                                 // added
@@ -41,10 +44,6 @@ public class entree {
     }
 
     public void addTopping(int toppingId) {
-        if (toppingId == 0) {
-            numToppings = 4;
-            toppings[0] = 0;
-        }
         if (numToppings == 4) {
             System.out.println("Error too many toppings");
         } else {

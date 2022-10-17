@@ -2,12 +2,18 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JFormattedTextField.AbstractFormatter;
 
 import java.awt.Color;
 import java.awt.event.*;
 import java.awt.*;
 import java.sql.*;
+
 import java.util.Vector;
+import java.util.Calendar;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * @author Nick, Ismat, Nebiyou, Aadith
@@ -17,7 +23,91 @@ public class demo extends JFrame {
     public static int type;
     public static int protein;
     public static order theOrder = new order();
+    
+    /**
+    * Helper function for view/edit inventory screen that updates the inventory
+     */
+    public static void update_inventory(Vector<Vector<String>> changes) {
+        Connection conn = null;
+        String teamNumber = "14";
+        String sectionNumber = "912";
+        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
 
+        // Connecting to the database
+        try {
+            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+
+        try {
+           
+            for (int r = 0; r < changes.size(); r++) {
+                String tblName = changes.get(r).get(0);
+                String item = changes.get(r).get(1);
+                String stock = changes.get(r).get(2);
+
+                String sqlStatement = "";
+                Statement stmt = conn.createStatement();
+                
+                try {
+                    if (Integer.parseInt(stock) < 0) {
+                        continue;
+                    }
+                }
+                catch (NumberFormatException e) {
+                    continue;
+                }
+                
+                if (tblName.equals("Entrees")) {
+                    sqlStatement = "UPDATE \"Entrees\" SET \"Entree Inventory\"=" + stock + " WHERE \"Entree Items\"='" + item + "'";
+                } else if (tblName.equals("Dressings")) {
+                    sqlStatement = "UPDATE \"Dressings\" SET \"Dressing Inventory\"=" + stock + " WHERE \"Dressing Item\"='" + item + "'";
+                } else if (tblName.equals("Drinks")) {
+                    sqlStatement = "UPDATE \"Drinks\" SET \"Drink Inventory\"=" + stock + " WHERE \"Drink Item\"='" + item + "'";
+                } else if (tblName.equals("Starters")) {
+                    sqlStatement = "UPDATE \"Starters\" SET \"Starter Inventory\"=" + stock + " WHERE \"Starter Item\"='" + item + "'";
+                } else if (tblName.equals("Toppings")) {
+                    sqlStatement = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
+                }
+                
+                ResultSet result = stmt.executeUpdate(sqlStatement);
+                // System.out.println(sqlQuery);
+            }
+        } catch (Exception e) {
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        try {
+            conn.close();
+            // System.out.println("Connection Closed.");
+        } catch (Exception e) {
+            // System.out.println("Connection NOT Closed.");
+        }
+    }
+    
+    /**
+    *
+     */
+    private String datePattern = "yyyy-MM-dd";
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+    @Override
+    public Object stringToValue(String text) throws ParseException {
+        return dateFormatter.parseObject(text);
+    }
+
+    @Override
+    public String valueToString(Object value) throws ParseException {
+        if (value != null) {
+            Calendar cal = (Calendar) value;
+            return dateFormatter.format(cal.getTime());
+        }
+        return "";
+    }
     /**
      * Opens welcome screen that starts our gui
      */
@@ -107,6 +197,7 @@ public class demo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // add seasonal item screen;
+                seasonal_item();
                 frame.setVisible(false);
 
             }
@@ -119,6 +210,42 @@ public class demo extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // see inventory screen;
                 view_inventory();
+                frame.setVisible(false);
+                
+            }
+        });
+        viewInventory.setBounds(350, 50, 300, 100);
+
+        JButton salesReportInput = new JButton("Sales Report");
+        viewInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // see inventory screen;
+                sales_report_input();
+                frame.setVisible(false);
+                
+            }
+        });
+        viewInventory.setBounds(350, 50, 300, 100);
+
+        JButton excessReportInput = new JButton("Excess Report");
+        viewInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // see inventory screen;
+                sales_report_input();
+                frame.setVisible(false);
+                
+            }
+        });
+        viewInventory.setBounds(350, 50, 300, 100);
+
+        JButton restockReport = new JButton("Restock Report");
+        viewInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // see inventory screen;
+                sales_report_input();
                 frame.setVisible(false);
                 
             }
@@ -138,6 +265,10 @@ public class demo extends JFrame {
         frame.add(takeOrder);
         // frame.add(addItem);
         frame.add(viewInventory);
+        frame.add(salesReportInput);
+        frame.add(excessReportInput);
+        frame.add(restockReport);
+        frame.add(addItem);
         frame.add(exit);
 
         frame.setSize(1000, 1000);
@@ -184,6 +315,731 @@ public class demo extends JFrame {
         frame.setVisible(true); // making the frame visible
     }
 
+    /**
+     * Loads the entree screen
+     */
+    public static void entree_screen() {
+        // int entreeId;
+
+        JFrame frame = new JFrame("ORDER: ENTREES");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JLabel label1 = new JLabel("Choose An Entree");
+        label1.setBounds(250, 0, 825, 100);
+        label1.setFont(new Font("Arial", Font.BOLD, 40));
+
+        JLabel label2 = new JLabel("Or Add The Combo");
+        label2.setBounds(250, 350, 825, 100);
+        label2.setFont(new Font("Arial", Font.BOLD, 40));
+
+        JButton bowlOption = new JButton("Grain Bowl"); // set it to where some entree has to have been selected
+        JButton saladOption = new JButton("Salad");
+        JButton pitaOption = new JButton("Pita");
+        JButton greenOption = new JButton("Green & Grains");
+        JButton gyroCombo = new JButton("Gyro Combo");
+        
+        bowlOption.setBounds(75, 150, 150, 50);// x axis, y axis, width, height
+        bowlOption.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                type = 0; // index 0
+                bowlOption.setBackground(SystemColor.activeCaption);
+                saladOption.setBackground(null);
+                pitaOption.setBackground(null);
+                greenOption.setBackground(null);
+                gyroCombo.setBackground(null);
+            }
+        });
+
+        saladOption.setBounds(275, 150, 150, 50);
+        saladOption.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                type = 5;
+                bowlOption.setBackground(null);
+                saladOption.setBackground(SystemColor.activeCaption);
+                pitaOption.setBackground(null);
+                greenOption.setBackground(null);
+                gyroCombo.setBackground(null);
+            }
+        });
+
+        pitaOption.setBounds(475, 150, 150, 50);
+        pitaOption.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                type = 10; // index 0
+                bowlOption.setBackground(null);
+                saladOption.setBackground(null);
+                pitaOption.setBackground(SystemColor.activeCaption);
+                greenOption.setBackground(null);
+                gyroCombo.setBackground(null);
+            }
+        });
+        greenOption.setBounds(675, 150, 150, 50);
+        greenOption.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                type = 15; // index 0
+                bowlOption.setBackground(null);
+                saladOption.setBackground(null);
+                pitaOption.setBackground(null);
+                greenOption.setBackground(SystemColor.activeCaption);
+                gyroCombo.setBackground(null);
+            }
+        });
+
+        /* 
+         * 
+        */
+
+        JButton gyroPro = new JButton("Gyro");
+        JButton falPro = new JButton("Falafel");
+        JButton vegMedPro = new JButton("Vegetable Medley");
+        JButton mBallsPro = new JButton("Meat Ball");
+        JButton chknPro = new JButton("Chicken");
+        
+        gyroPro.setBounds(25, 250, 150, 50);// x axis, y axis, width, height
+        gyroPro.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                protein = 0; // index 0
+                gyroPro.setBackground(SystemColor.activeCaption);
+                falPro.setBackground(null);
+                vegMedPro.setBackground(null);
+                mBallsPro.setBackground(null);
+                chknPro.setBackground(null);
+                gyroCombo.setBackground(null);
+            }
+        });
+        falPro.setBounds(200, 250, 150, 50);
+        falPro.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                protein = 1; // index 0
+                gyroPro.setBackground(null);
+                falPro.setBackground(SystemColor.activeCaption);
+                vegMedPro.setBackground(null);
+                mBallsPro.setBackground(null);
+                chknPro.setBackground(null);
+                gyroCombo.setBackground(null);
+            }
+        });
+        vegMedPro.setBounds(375, 250, 150, 50);
+        vegMedPro.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                protein = 2; // index 0
+                gyroPro.setBackground(null);
+                falPro.setBackground(null);
+                vegMedPro.setBackground(SystemColor.activeCaption);
+                mBallsPro.setBackground(null);
+                chknPro.setBackground(null);
+                gyroCombo.setBackground(null);
+            }
+        });
+
+        mBallsPro.setBounds(550, 250, 150, 50);
+        mBallsPro.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                protein = 3; // index 0
+                gyroPro.setBackground(null);
+                falPro.setBackground(null);
+                vegMedPro.setBackground(null);
+                mBallsPro.setBackground(SystemColor.activeCaption);
+                chknPro.setBackground(null);
+                gyroCombo.setBackground(null);
+            }
+        });
+
+        chknPro.setBounds(725, 250, 150, 50);
+        chknPro.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                protein = 4; // index 0
+                gyroPro.setBackground(null);
+                falPro.setBackground(null);
+                vegMedPro.setBackground(null);
+                mBallsPro.setBackground(null);
+                chknPro.setBackground(SystemColor.activeCaption);
+                gyroCombo.setBackground(null);
+            }
+        });
+
+        gyroCombo.setBounds(100, 500, 700, 100);
+        gyroCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                type = 20;
+                protein = 0; // index 0
+                bowlOption.setBackground(null);
+                saladOption.setBackground(null);
+                pitaOption.setBackground(null);
+                greenOption.setBackground(null);
+                gyroPro.setBackground(null);
+                falPro.setBackground(null);
+                vegMedPro.setBackground(null);
+                mBallsPro.setBackground(null);
+                chknPro.setBackground(null);
+                gyroCombo.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton toppings = new JButton("Continue to Toppings & Dressings"); // set it to where some entree has to have
+                                                                            // been selected
+        toppings.setBounds(475, 700, 425, 100);
+        toppings.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {// assumint that stuff is chosen correctly to start
+
+                theOrder = new order(type + protein);
+                toppings_screen();
+                frame.setVisible(false);
+            }
+        });
+
+        JButton exit = new JButton("Exit to Main Screen");
+        exit.setBounds(25, 700, 425, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcome();
+                frame.setVisible(false);
+            }
+        });
+
+        Color c = new Color(0, 255, 0);
+        c = new Color(255, 0, 0);
+        frame.add(label1);
+        frame.add(label2);
+
+        frame.add(saladOption);
+        frame.add(bowlOption);
+        frame.add(pitaOption);
+        frame.add(greenOption);
+
+        frame.add(gyroPro);
+        frame.add(falPro);
+        frame.add(vegMedPro);
+        frame.add(mBallsPro);
+        frame.add(chknPro);
+        frame.add(gyroCombo);
+
+        frame.add(toppings);
+        frame.add(exit);
+        c = new Color(20, 20, 20);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+
+        frame.setVisible(true);
+    }
+
+    /**
+     * shows the topping choice menu
+     */
+    public static void toppings_screen() {
+        int width = 164;
+        int height = 50;
+        int padding = 28;
+
+        JFrame frame = new JFrame("ORDER: TOPPINGS");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JLabel label1 = new JLabel("Choose Toppings: ");
+        label1.setBounds(250, 0, 825, 100);
+        label1.setFont(new Font("Arial", Font.BOLD, 40));
+
+        JButton noTop = new JButton("No Topping"); // set it to where some entree has to have been selected
+        noTop.setBounds(28, 150, 164, 50);
+        noTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(0);
+                noTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton pickOnionTop = new JButton("Pickled Onions"); // set it to where some entree has to have been selected
+        pickOnionTop.setBounds(220, 150, 164, 50);
+        pickOnionTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(1);
+                pickOnionTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton diceCucumberTop = new JButton("Diced Cucumber");
+        diceCucumberTop.setBounds(412, 150, 164, 50);
+        diceCucumberTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(2);
+                diceCucumberTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton citCousTop = new JButton("Citrius Couscous");
+        citCousTop.setBounds(604, 150, 164, 50);
+        citCousTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(3);
+                citCousTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton roastCauliTop = new JButton("Roasted Cauliflower");
+        roastCauliTop.setBounds(796, 150, 164, 50);
+        roastCauliTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(4);
+                roastCauliTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton tomOnTop = new JButton("Tomato-onion Salad");
+        tomOnTop.setBounds(130, 228, 164, 50);
+        tomOnTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(5);
+                tomOnTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton kalamataTop = new JButton("Kalamatas");
+        kalamataTop.setBounds(322, 228, 164, 50);
+        kalamataTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(6);
+                kalamataTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton roastPeppTop = new JButton("Roasted Peppers");
+        roastPeppTop.setBounds(514, 228, 164, 50);
+        roastPeppTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(7);
+                roastPeppTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton redCabbTop = new JButton("Red Cabbage Slaw");
+        redCabbTop.setBounds(706, 228, 164, 50);
+        redCabbTop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addTopping(8);
+                redCabbTop.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JLabel dressingsLabel = new JLabel("Choose Dressings: ");
+        dressingsLabel.setBounds(250, 350, 825, 100);
+        dressingsLabel.setFont(new Font("Arial", Font.BOLD, 40));
+
+        JButton noDress = new JButton("No Dressing");
+        JButton hummusDress = new JButton("Hummus");
+        JButton redPeppHummusDress = new JButton("Red Pepper Hummus");
+        JButton jalapFetaDress = new JButton("Jalapeno Feta");
+        JButton tzatzikiDress = new JButton("Tzatziki");
+        JButton greekVinaDress = new JButton("Greek Vinaigrette");
+        JButton harissYogDress = new JButton("Harissa Yogurt");
+        JButton lemonHerbTahiDress = new JButton("Lemon Herb Tahini");
+        JButton yogDillDress = new JButton("Yogurt Dill");
+        
+        noDress.setBounds(28, 500, 164, 50);
+        noDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(0);
+                noDress.setBackground(SystemColor.activeCaption);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        hummusDress.setBounds(220, 500, 164, 50);
+        hummusDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(1);
+                noDress.setBackground(null);
+                hummusDress.setBackground(SystemColor.activeCaption);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        redPeppHummusDress.setBounds(412, 500, 164, 50);
+        redPeppHummusDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(2);
+                noDress.setBackground(null);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(SystemColor.activeCaption);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        jalapFetaDress.setBounds(604, 500, 164, 50);
+        jalapFetaDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(3);
+                noDress.setBackground(null);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(SystemColor.activeCaption);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        tzatzikiDress.setBounds(796, 500, 164, 50);
+        tzatzikiDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(4);
+                noDress.setBackground(null);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(SystemColor.activeCaption);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        greekVinaDress.setBounds(130, 578, 164, 50);
+        greekVinaDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(5);
+                noDress.setBackground(null);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(SystemColor.activeCaption);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        harissYogDress.setBounds(322, 578, 164, 50);
+        harissYogDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(6);
+                noDress.setBackground(null);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(SystemColor.activeCaption);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        lemonHerbTahiDress.setBounds(514, 578, 164, 50);
+        lemonHerbTahiDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(7);
+                noDress.setBackground(null);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(SystemColor.activeCaption);
+                yogDillDress.setBackground(null);
+            }
+        });
+
+        yogDillDress.setBounds(706, 578, 164, 50);
+        yogDillDress.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDressing(8);
+                noDress.setBackground(null);
+                hummusDress.setBackground(null);
+                redPeppHummusDress.setBackground(null);
+                jalapFetaDress.setBackground(null);
+                tzatzikiDress.setBackground(null);
+                greekVinaDress.setBackground(null);
+                harissYogDress.setBackground(null);
+                lemonHerbTahiDress.setBackground(null);
+                yogDillDress.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton starter = new JButton("Continue to Starters & Drinks");
+        starter.setBounds(475, 700, 425, 100);
+        starter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                starter_menu();
+                frame.setVisible(false);
+            }
+        });
+
+        JButton entree = new JButton("Return to Entrees");
+        entree.setBounds(25, 700, 425, 100);
+        entree.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entree_screen();
+                frame.setVisible(false);
+            }
+        });
+
+        // Color c = new Color(0, 0, 255);
+        // noTop.setBackground(c);
+        // pickOnionTop.setBackground(c);
+        // diceCucumberTop.setBackground(c);
+        // citCousTop.setBackground(c);
+        // roastCauliTop.setBackground(c);
+        // tomOnTop.setBackground(c);
+        // kalamataTop.setBackground(c);
+        // roastPeppTop.setBackground(c);
+        // redCabbTop.setBackground(c);
+
+        frame.add(starter);
+        frame.add(entree);
+
+        frame.add(label1);
+        frame.add(dressingsLabel);
+
+        frame.add(noTop);
+        frame.add(pickOnionTop);
+        frame.add(diceCucumberTop);
+        frame.add(citCousTop);
+        frame.add(roastCauliTop);
+        frame.add(tomOnTop);
+        frame.add(kalamataTop);
+        frame.add(roastPeppTop);
+        frame.add(redCabbTop);
+
+        frame.add(noDress);
+        frame.add(hummusDress);
+        frame.add(redPeppHummusDress);
+        frame.add(jalapFetaDress);
+        frame.add(tzatzikiDress);
+        frame.add(greekVinaDress);
+        frame.add(harissYogDress);
+        frame.add(lemonHerbTahiDress);
+        frame.add(yogDillDress);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true);
+    }
+
+    /**
+     * Shows the starter menu
+     */
+    public static void starter_menu() {
+
+        JFrame frame = new JFrame("ORDER: STARTERS & DRINKS");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JLabel starterLabel = new JLabel("Choose Starter: ");
+        starterLabel.setBounds(250, 0, 825, 100);
+        starterLabel.setFont(new Font("Arial", Font.BOLD, 40));
+
+        JButton noStarter = new JButton("None");
+        JButton falStart = new JButton("Falafels");
+        JButton hummus = new JButton("Hummus & Pita");
+        JButton vegan = new JButton("Vegan Box");
+        JButton fries = new JButton("Garlic Fries");
+
+        noStarter.setBounds(28, 150, 164, 50);
+        noStarter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addStarter(0);
+                noStarter.setBackground(SystemColor.activeCaption);
+                falStart.setBackground(null);
+                hummus.setBackground(null);
+                vegan.setBackground(null);
+                fries.setBackground(null);
+            }
+        });
+        falStart.setBounds(130, 150, 164, 50);
+        falStart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addStarter(1);
+                noStarter.setBackground(null);
+                falStart.setBackground(SystemColor.activeCaption);
+                hummus.setBackground(null);
+                vegan.setBackground(null);
+                fries.setBackground(null);
+            }
+        });
+        hummus.setBounds(322, 150, 164, 50);
+        hummus.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addStarter(2);
+                noStarter.setBackground(null);
+                falStart.setBackground(null);
+                hummus.setBackground(SystemColor.activeCaption);
+                vegan.setBackground(null);
+                fries.setBackground(null);
+            }
+        });
+        vegan.setBounds(514, 150, 164, 50);
+        vegan.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addStarter(3);
+                noStarter.setBackground(null);
+                falStart.setBackground(null);
+                hummus.setBackground(null);
+                vegan.setBackground(SystemColor.activeCaption);
+                fries.setBackground(null);
+            }
+        });
+        fries.setBounds(706, 150, 164, 50);
+        fries.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addStarter(4);
+                noStarter.setBackground(null);
+                falStart.setBackground(null);
+                hummus.setBackground(null);
+                vegan.setBackground(null);
+                fries.setBackground(SystemColor.activeCaption);
+            }
+        });
+        JButton drinks = new JButton("Continue to Drinks");// go to drink menu
+        drinks.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                frame.setVisible(false);
+            }
+        });
+
+        JLabel drinksLabel = new JLabel("Select your drink:");
+        drinksLabel.setBounds(250, 350, 825, 100);
+        drinksLabel.setFont(new Font("Arial", Font.BOLD, 40));
+
+        JButton bottledWaterDrink = new JButton("Bottled Water");
+        JButton bottledSodaDrink = new JButton("Bottled Soda");
+        JButton fountainSodaDrink = new JButton("Fountain Soda");
+
+        bottledWaterDrink.setBounds(220, 500, 164, 50);
+        bottledWaterDrink.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDrink(1);
+                bottledWaterDrink.setBackground(SystemColor.activeCaption);
+                bottledSodaDrink.setBackground(null);
+                fountainSodaDrink.setBackground(null);
+            }
+        });
+        bottledSodaDrink.setBounds(412, 500, 164, 50);
+        bottledSodaDrink.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDrink(2);
+                bottledWaterDrink.setBackground(null);
+                bottledSodaDrink.setBackground(SystemColor.activeCaption);
+                fountainSodaDrink.setBackground(null);
+            }
+        });
+        fountainSodaDrink.setBounds(604, 500, 164, 50);
+        fountainSodaDrink.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDrink(3);
+                bottledWaterDrink.setBackground(null);
+                bottledSodaDrink.setBackground(null);
+                fountainSodaDrink.setBackground(SystemColor.activeCaption);
+            }
+        });
+
+        JButton payment = new JButton("Continue to Payment");
+        payment.setBounds(475, 700, 425, 100);
+        payment.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                payment_page();
+                frame.setVisible(false);
+            }
+        });
+
+        JButton toppings = new JButton("Return to Toppings & Drinks");
+        toppings.setBounds(25, 700, 425, 100);
+        toppings.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toppings_screen();
+                frame.setVisible(false);
+            }
+        });
+
+        frame.add(starterLabel);
+        frame.add(drinksLabel);
+
+        frame.add(payment);
+        frame.add(toppings);
+
+        frame.add(noStarter);
+        frame.add(falStart);
+        frame.add(hummus);
+        frame.add(vegan);
+        frame.add(fries);
+        frame.add(drinks);
+        frame.add(bottledWaterDrink);
+        frame.add(bottledSodaDrink);
+        frame.add(fountainSodaDrink);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true); // making the frame visible
+    }
+
+    /**
+    * Shows the view/edit inventory screen
+     */
     public static int view_inventory() {
         JFrame frame = new JFrame("VIEW/EDIT INVENTORY");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -359,608 +1215,6 @@ public class demo extends JFrame {
         return 0;
     }
 
-    public static void update_inventory(Vector<Vector<String>> changes) {
-        Connection conn = null;
-        String teamNumber = "14";
-        String sectionNumber = "912";
-        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
-        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
-
-        // Connecting to the database
-        try {
-            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-
-        try {
-           
-            for (int r = 0; r < changes.size(); r++) {
-                String tblName = changes.get(r).get(0);
-                String item = changes.get(r).get(1);
-                String stock = changes.get(r).get(2);
-
-                String sqlQuery = "";
-                Statement stmt = conn.createStatement();
-                
-                try {
-                    if (Integer.parseInt(stock) < 0) {
-                        continue;
-                    }
-                }
-                catch (NumberFormatException e) {
-                    continue;
-                }
-                
-                if (tblName.equals("Entrees")) {
-                    sqlQuery = "UPDATE \"Entrees\" SET \"Entree Inventory\"=" + stock + " WHERE \"Entree Items\"='" + item + "'";
-                } else if (tblName.equals("Dressings")) {
-                    sqlQuery = "UPDATE \"Dressings\" SET \"Dressing Inventory\"=" + stock + " WHERE \"Dressing Item\"='" + item + "'";
-                } else if (tblName.equals("Drinks")) {
-                    sqlQuery = "UPDATE \"Drinks\" SET \"Drink Inventory\"=" + stock + " WHERE \"Drink Item\"='" + item + "'";
-                } else if (tblName.equals("Starters")) {
-                    sqlQuery = "UPDATE \"Starters\" SET \"Starter Inventory\"=" + stock + " WHERE \"Starter Item\"='" + item + "'";
-                } else if (tblName.equals("Toppings")) {
-                    sqlQuery = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
-                }
-                
-                ResultSet result = stmt.executeQuery(sqlQuery);
-                // System.out.println(sqlQuery);
-            }
-        } catch (Exception e) {
-            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        try {
-            conn.close();
-            // System.out.println("Connection Closed.");
-        } catch (Exception e) {
-            // System.out.println("Connection NOT Closed.");
-        }
-    }
-
-    /**
-     * Loads the entree screen
-     */
-    public static void entree_screen() {
-        // int entreeId;
-
-        JFrame frame = new JFrame("ORDER: ENTREES");
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        JLabel label1 = new JLabel("Choose An Entree");
-        label1.setBounds(250, 0, 825, 100);
-        label1.setFont(new Font("Arial", Font.BOLD, 40));
-
-        JLabel label2 = new JLabel("Or Add The Combo");
-        label2.setBounds(250, 350, 825, 100);
-        label2.setFont(new Font("Arial", Font.BOLD, 40));
-
-        JButton bowlOption = new JButton("Grain Bowl"); // set it to where some entree has to have been selected
-        bowlOption.setBounds(75, 150, 150, 50);// x axis, y axis, width, height
-        bowlOption.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                type = 0; // index 0
-            }
-        });
-
-        JButton saladOption = new JButton("Salad"); // set it to where some entree has to have been selected
-        saladOption.setBounds(275, 150, 150, 50);
-        saladOption.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                type = 5;
-            }
-        });
-
-        JButton pitaOption = new JButton("Pita"); // set it to where some entree has to have been selected
-        pitaOption.setBounds(475, 150, 150, 50);
-        pitaOption.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                type = 10; // index 0
-            }
-        });
-        JButton greenOption = new JButton("Green & Grains"); // set it to where some entree has to have been selected
-        greenOption.setBounds(675, 150, 150, 50);
-        greenOption.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                type = 15; // index 0
-            }
-        });
-
-        /* 
-         * 
-        */
-
-        JButton gyroPro = new JButton("Gyro"); // set it to where some entree has to have been selected
-        gyroPro.setBounds(25, 250, 150, 50);// x axis, y axis, width, height
-        gyroPro.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                protein = 0; // index 0
-            }
-        });
-        JButton falPro = new JButton("Falafel"); // set it to where some entree has to have been selected
-        falPro.setBounds(200, 250, 150, 50);
-        falPro.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                protein = 1; // index 0
-            }
-        });
-        JButton vegMedPro = new JButton("Vegetable Medley"); // set it to where some entree has to have been selected
-        vegMedPro.setBounds(375, 250, 150, 50);
-        vegMedPro.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                protein = 2; // index 0
-            }
-        });
-
-        JButton mBallsPro = new JButton("Meat Ball"); // set it to where some entree has to have been selected
-        mBallsPro.setBounds(550, 250, 150, 50);
-        mBallsPro.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                protein = 3; // index 0
-            }
-        });
-
-        JButton chknPro = new JButton("Chicken"); // set it to where some entree has to have been selected
-        chknPro.setBounds(725, 250, 150, 50);
-        chknPro.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                protein = 4; // index 0
-            }
-        });
-
-        JButton gyroCombo = new JButton("Gyro Combo"); // set it to where some entree has to have been selected
-        gyroCombo.setBounds(100, 500, 700, 100);
-        gyroCombo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                type = 20;
-                protein = 0; // index 0
-            }
-        });
-
-        JButton toppings = new JButton("Continue to Toppings & Dressings"); // set it to where some entree has to have
-                                                                            // been selected
-        toppings.setBounds(475, 700, 425, 100);
-        toppings.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {// assumint that stuff is chosen correctly to start
-
-                theOrder = new order(type + protein);
-                toppings_screen();
-                frame.setVisible(false);
-            }
-        });
-
-        JButton exit = new JButton("Exit to Main Screen");
-        exit.setBounds(25, 700, 425, 100);
-        exit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                welcome();
-                frame.setVisible(false);
-            }
-        });
-
-        Color c = new Color(0, 255, 0);
-        c = new Color(255, 0, 0);
-        frame.add(label1);
-        frame.add(label2);
-
-        frame.add(saladOption);
-        frame.add(bowlOption);
-        frame.add(pitaOption);
-        frame.add(greenOption);
-
-        frame.add(gyroPro);
-        frame.add(falPro);
-        frame.add(vegMedPro);
-        frame.add(mBallsPro);
-        frame.add(chknPro);
-        frame.add(gyroCombo);
-
-        frame.add(toppings);
-        frame.add(exit);
-        c = new Color(20, 20, 20);
-
-        frame.setSize(1000, 1000);
-        frame.setLayout(null); // using no layout managers
-
-        frame.setVisible(true);
-    }
-
-    /**
-     * shows the topping choice menu
-     */
-    public static void toppings_screen() {
-        int width = 164;
-        int height = 50;
-        int padding = 28;
-
-        JFrame frame = new JFrame("ORDER: TOPPINGS");
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        JLabel label1 = new JLabel("Choose Toppings: ");
-        label1.setBounds(250, 0, 825, 100);
-        label1.setFont(new Font("Arial", Font.BOLD, 40));
-
-        JButton noTop = new JButton("No Topping"); // set it to where some entree has to have been selected
-        noTop.setBounds(28, 150, 164, 50);
-        noTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(0);
-            }
-        });
-
-        JButton pickOnionTop = new JButton("Pickled Onions"); // set it to where some entree has to have been selected
-        pickOnionTop.setBounds(220, 150, 164, 50);
-        pickOnionTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(1);
-            }
-        });
-
-        JButton diceCucumberTop = new JButton("Diced Cucumber");
-        diceCucumberTop.setBounds(412, 150, 164, 50);
-        diceCucumberTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(2);
-            }
-        });
-
-        JButton citCousTop = new JButton("Citrius Couscous");
-        citCousTop.setBounds(604, 150, 164, 50);
-        citCousTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(3);
-            }
-        });
-
-        JButton roastCauliTop = new JButton("Roasted Cauliflower");
-        roastCauliTop.setBounds(796, 150, 164, 50);
-        roastCauliTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(4);
-            }
-        });
-
-        JButton tomOnTop = new JButton("Tomato-onion Salad");
-        tomOnTop.setBounds(130, 228, 164, 50);
-        tomOnTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(5);
-            }
-        });
-
-        JButton kalamataTop = new JButton("Kalamatas");
-        kalamataTop.setBounds(322, 228, 164, 50);
-        kalamataTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(6);
-            }
-        });
-
-        JButton roastPeppTop = new JButton("Roasted Peppers");
-        roastPeppTop.setBounds(514, 228, 164, 50);
-        roastPeppTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(7);
-            }
-        });
-
-        JButton redCabbTop = new JButton("Red Cabbage Slaw");
-        redCabbTop.setBounds(706, 228, 164, 50);
-        redCabbTop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addTopping(8);
-            }
-        });
-
-        JLabel dressingsLabel = new JLabel("Choose Dressings: ");
-        dressingsLabel.setBounds(250, 350, 825, 100);
-        dressingsLabel.setFont(new Font("Arial", Font.BOLD, 40));
-
-        JButton noDress = new JButton("No Dressing");
-        noDress.setBounds(28, 500, 164, 50);
-        noDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(0);
-            }
-        });
-
-        JButton hummusDress = new JButton("Hummus");
-        hummusDress.setBounds(220, 500, 164, 50);
-        hummusDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(1);
-            }
-        });
-
-        JButton redPeppHummusDress = new JButton("Red Pepper Hummus");
-        redPeppHummusDress.setBounds(412, 500, 164, 50);
-        redPeppHummusDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(2);
-            }
-        });
-
-        JButton jalapFetaDress = new JButton("Jalapeno Feta");
-        jalapFetaDress.setBounds(604, 500, 164, 50);
-        jalapFetaDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(3);
-            }
-        });
-
-        JButton tzatzikiDress = new JButton("Tzatziki");
-        tzatzikiDress.setBounds(796, 150, 164, 50);
-        tzatzikiDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(4);
-            }
-        });
-
-        JButton greekVinaDress = new JButton("Greek Vinaigrette");
-        greekVinaDress.setBounds(130, 578, 164, 50);
-        greekVinaDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(5);
-            }
-        });
-
-        JButton harissYogDress = new JButton("Harissa Yogurt");
-        harissYogDress.setBounds(322, 578, 164, 50);
-        harissYogDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(6);
-            }
-        });
-
-        JButton lemonHerbTahiDress = new JButton("Lemon Herb Tahini");
-        lemonHerbTahiDress.setBounds(514, 578, 164, 50);
-        lemonHerbTahiDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(7);
-            }
-        });
-
-        JButton yogDillDress = new JButton("Yogurt Dill");
-        yogDillDress.setBounds(706, 578, 164, 50);
-        yogDillDress.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDressing(8);
-            }
-        });
-
-        JButton starter = new JButton("Continue to Starters & Drinks");
-        starter.setBounds(475, 700, 425, 100);
-        starter.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                starter_menu();
-                frame.setVisible(false);
-            }
-        });
-
-        JButton entree = new JButton("Return to Entrees");
-        entree.setBounds(25, 700, 425, 100);
-        entree.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                entree_screen();
-                frame.setVisible(false);
-            }
-        });
-
-        // Color c = new Color(0, 0, 255);
-        // noTop.setBackground(c);
-        // pickOnionTop.setBackground(c);
-        // diceCucumberTop.setBackground(c);
-        // citCousTop.setBackground(c);
-        // roastCauliTop.setBackground(c);
-        // tomOnTop.setBackground(c);
-        // kalamataTop.setBackground(c);
-        // roastPeppTop.setBackground(c);
-        // redCabbTop.setBackground(c);
-
-        frame.add(starter);
-        frame.add(entree);
-
-        frame.add(label1);
-        frame.add(dressingsLabel);
-
-        frame.add(noTop);
-        frame.add(pickOnionTop);
-        frame.add(diceCucumberTop);
-        frame.add(citCousTop);
-        frame.add(roastCauliTop);
-        frame.add(tomOnTop);
-        frame.add(kalamataTop);
-        frame.add(roastPeppTop);
-        frame.add(redCabbTop);
-
-        frame.add(noDress);
-        frame.add(hummusDress);
-        frame.add(redPeppHummusDress);
-        frame.add(jalapFetaDress);
-        frame.add(tzatzikiDress);
-        frame.add(greekVinaDress);
-        frame.add(harissYogDress);
-        frame.add(lemonHerbTahiDress);
-        frame.add(yogDillDress);
-
-        frame.setSize(1000, 1000);
-        frame.setLayout(null); // using no layout managers
-        frame.setVisible(true);
-    }
-
-    /**
-     * Shows the starter menu
-     */
-    public static void starter_menu() {
-
-        JFrame frame = new JFrame("ORDER: STARTERS & DRINKS");
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        JLabel starterLabel = new JLabel("Choose Starter: ");
-        starterLabel.setBounds(250, 0, 825, 100);
-        starterLabel.setFont(new Font("Arial", Font.BOLD, 40));
-
-        JButton noStarter = new JButton("None");
-        noStarter.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addStarter(0);
-            }
-        });
-        JButton falStart = new JButton("Falafels");
-        falStart.setBounds(130, 150, 164, 50);
-        falStart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addStarter(1);
-            }
-        });
-        JButton hummus = new JButton("Hummus & Pita");
-        hummus.setBounds(322, 150, 164, 50);
-        hummus.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addStarter(1);
-            }
-        });
-        JButton vegan = new JButton("Vegan Box");
-        vegan.setBounds(514, 150, 164, 50);
-        vegan.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addStarter(3);
-            }
-        });
-        JButton fries = new JButton("Garlic Fries");
-        fries.setBounds(706, 150, 164, 50);
-        fries.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addStarter(3);
-            }
-        });
-        JButton drinks = new JButton("Continue to Drinks");// go to drink menu
-        drinks.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                frame.setVisible(false);
-            }
-        });
-
-        JLabel drinksLabel = new JLabel("Select your drink:");
-        drinksLabel.setBounds(250, 350, 825, 100);
-        drinksLabel.setFont(new Font("Arial", Font.BOLD, 40));
-
-        JButton bottledWaterDrink = new JButton("Bottled Water");// if pressed pos displays menu_screen
-        bottledWaterDrink.setBounds(220, 500, 164, 50);
-        // bottledWaterDrink.setFont(new Font("Arial", Font.BOLD, 40));
-        bottledWaterDrink.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDrink(1);
-            }
-        });
-        Color c1 = new Color(0, 255, 0);
-        // bottledWaterDrink.setBackground(c1);
-
-        JButton bottledSodaDrink = new JButton("Bottled Soda");// if pressed pos displays menu_screen
-        bottledSodaDrink.setBounds(412, 500, 164, 50);
-        // bottledSodaDrink.setFont(new Font("Arial", Font.BOLD, 40));
-        bottledSodaDrink.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDrink(2);
-            }
-        });
-        // bottledSodaDrink.setBackground(c1);
-
-        JButton fountainSodaDrink = new JButton("Fountain Soda");// if pressed pos displays menu_screen
-        fountainSodaDrink.setBounds(604, 500, 164, 50);
-        // fountainSodaDrink.setFont(new Font("Arial", Font.BOLD, 40));
-        fountainSodaDrink.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                theOrder.addDrink(3);
-            }
-        });
-
-        JButton payment = new JButton("Continue to Payment");
-        payment.setBounds(475, 700, 425, 100);
-        payment.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                payment_page();
-                frame.setVisible(false);
-            }
-        });
-
-        JButton toppings = new JButton("Return to Toppings & Drinks");
-        toppings.setBounds(25, 700, 425, 100);
-        toppings.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toppings_screen();
-                frame.setVisible(false);
-            }
-        });
-
-        frame.add(starterLabel);
-        frame.add(drinksLabel);
-
-        frame.add(payment);
-        frame.add(toppings);
-
-        frame.add(noStarter);
-        frame.add(falStart);
-        frame.add(hummus);
-        frame.add(vegan);
-        frame.add(fries);
-        frame.add(drinks);
-        frame.add(bottledWaterDrink);
-        frame.add(bottledSodaDrink);
-        frame.add(fountainSodaDrink);
-
-        frame.setSize(1000, 1000);
-        frame.setLayout(null); // using no layout managers
-        frame.setVisible(true); // making the frame visible
-    }
-
     /**
      * Places the order and acts as the payment screen
      */
@@ -995,6 +1249,92 @@ public class demo extends JFrame {
         frame.setSize(1000, 1000);
         frame.setLayout(null); // using no layout managers
         frame.setVisible(true); // making the frame visible
+    }
+    
+    public static void sales_report_input() {
+        JFrame frame = new JFrame("SALES REPORT: INPUT");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JLabel dateLabel1 = new JLabel("Enter in the beginning date:");
+        UtilDateModel startDateModel = new UtilDateModel();
+        startDateModel.setDate(2022,8,1);
+        startDateModel.setSelected(true);
+        JDatePanelImpl startDatePanel = new JDatePanelImpl(startDateModel);
+        JDatePickerImpl startDatePicker = new JDatePanelPickerImpl(startDatePanel, new DateLabelFormatter());
+
+        JLabel dateLabel2 = new JLabel("Enter in the ending date:");
+        UtilDateModel endDateModel = new UtilDateModel();
+        endDateModel.setDate(2022,8,20);
+        endDateModel.setSelected(true);
+        JDatePanelImpl endDatePanel = new JDatePanelImpl(endDateModel);
+        JDatePickerImpl endDatePicker = new JDatePickerImpl(endDatePicker, new DateLabelFormatter());
+
+        JButton salesReport = new JButton("Sales Report");// if pressed pos displays menu_screen
+        salesReport.setBounds(50, 50, 825, 200);
+        salesReport.setFont(new Font("Arial", Font.BOLD, 40));
+        salesReport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date startingDate = (Date) startDatePicker.getModel().getValue();
+                Date endingDate = (Date) endDatePicker.getModel().getValue();
+                sales_report();
+                frame.setVisible(false);
+            }
+        });
+
+        frame.add(dateLabel1);
+        frame.add(startDatePicker);
+        frame.add(dateLabel2);
+        frame.add(endDatePicker);
+
+        frame.setSize(1000,1000);
+        frame.setLayout(null);
+        frame.setVisible(true);
+    }
+
+    public static void sales_report() {
+        JFrame frame = new JFrame("SALES REPORT");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        frame.setSize(1000,1000);
+        frame.setLayout(null);
+        frame.setVisible(true);
+    }
+
+    public static void seasonal_item(){
+        JFrame frame = new JFrame("ADD SEASONAL ITEM");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    
+        String[] typeStrings= {"Entree Type","Entree Protein", "Drink", "Starter"}; 
+        JLabel typeLabel = new JLabel("What type of seasonal item would you like to add?");
+        JComboBox typeBox =new JComboBox(typeStrings);
+        /*typeBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });*/
+        
+        /*NOT FORMATTED FORMAT BEFORE SUBMISSION */
+        JLabel inventoryLabel = new JLabel("How many would you like to add?");
+        JTextField inventoryAmnt = new JTextField(20);
+        JLabel priceLabel = new JLabel("If the item is a drink or a starter please add a price");
+        JTextField price = new JTextField(20);
+
+        JButton goBack=new JButton("Go Back");
+        JButton addSeasonal= new JButton("Add Seasonal");
+        
+        frame.add(typeLabel);
+        frame.add(inventoryLabel);
+        frame.add(priceLabel);
+
+        frame.add(typeBox);
+        frame.add(inventoryAmnt);
+        frame.add(price);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
