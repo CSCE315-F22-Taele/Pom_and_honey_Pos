@@ -293,7 +293,7 @@ public class demo extends JFrame {
         update.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // System.out.println("Update");
+                System.out.println("Update " + changes.size());
                 update_inventory(changes);
             }
         });
@@ -306,9 +306,9 @@ public class demo extends JFrame {
         tableModel.addTableModelListener(new TableModelListener() {
     
             public void tableChanged(TableModelEvent e) {
-                if (e.getType() != e.UPDATE) {
-                    return;
-                }
+                // if (e.getType() != e.UPDATE) {
+                //     return;
+                // }
 
                 int colChanged = e.getColumn();
                 if (colChanged == 0) {
@@ -335,7 +335,7 @@ public class demo extends JFrame {
                 entryChange.add(item);
                 entryChange.add(stock);
                 
-                // System.out.println(tblName + " " + inventoryTable.get(rowChanged).get(0) + " " + inventoryTable.get(rowChanged).get(1));
+                System.out.println(tblName + " " + inventoryTable.get(rowChanged).get(0) + " " + inventoryTable.get(rowChanged).get(1));
                 
                 changes.add(entryChange);
             }
@@ -374,10 +374,11 @@ public class demo extends JFrame {
             // System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-
+        // System.out.println("Test 1");
         try {
            
             for (int r = 0; r < changes.size(); r++) {
+                // System.out.println("Test 2");
                 String tblName = changes.get(r).get(0);
                 String item = changes.get(r).get(1);
                 String stock = changes.get(r).get(2);
@@ -406,8 +407,8 @@ public class demo extends JFrame {
                     sqlQuery = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
                 }
                 
-                ResultSet result = stmt.executeQuery(sqlQuery);
                 // System.out.println(sqlQuery);
+                stmt.executeUpdate(sqlQuery);
             }
         } catch (Exception e) {
             // System.err.println(e.getClass().getName() + ": " + e.getMessage());
