@@ -8,6 +8,8 @@ public class starter {
     // add arrays of names and prices where index corresponds to itemId
     private String[] starterOptions = { "None", "2 Felafels", "Hummus & Pita", "Vegan Box", "Garlic Fries" };
     private double[] prices = { 0, 2.85, 3.5, 6.49, 1.99 };
+    private String seasonalStarter ="";
+    private double seasonalPrice =0;
 
     public starter(int itemId) { // itemId shold be enough to set name and price
         setItem(itemId);// dry coding :)

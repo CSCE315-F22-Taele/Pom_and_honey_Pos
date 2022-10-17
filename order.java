@@ -24,7 +24,7 @@ public class order {
             orderEntree = new entree(entreeId / 5);
             orderEntree.setProtein(entreeId % 5);
         } else if (entreeId == 20) {
-            orderEntree = new entree(5);
+            orderEntree = new entree(4);
             orderEntree.setProtein(0);
         } else {
             System.out.println("Error invalid entree");
