@@ -74,7 +74,7 @@ public class demo extends JFrame {
                     sqlStatement = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
                 }
                 
-                ResultSet result = stmt.executeUpdate(sqlStatement);
+                stmt.executeUpdate(sqlStatement);
                 // System.out.println(sqlQuery);
             }
         } catch (Exception e) {
@@ -92,22 +92,22 @@ public class demo extends JFrame {
     /**
     *
      */
-    private String datePattern = "yyyy-MM-dd";
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+    // private String datePattern = "yyyy-MM-dd";
+    // private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
-    @Override
-    public Object stringToValue(String text) throws ParseException {
-        return dateFormatter.parseObject(text);
-    }
+    // @Override
+    // public Object stringToValue(String text) throws ParseException {
+    //     return dateFormatter.parseObject(text);
+    // }
 
-    @Override
-    public String valueToString(Object value) throws ParseException {
-        if (value != null) {
-            Calendar cal = (Calendar) value;
-            return dateFormatter.format(cal.getTime());
-        }
-        return "";
-    }
+    // @Override
+    // public String valueToString(Object value) throws ParseException {
+    //     if (value != null) {
+    //         Calendar cal = (Calendar) value;
+    //         return dateFormatter.format(cal.getTime());
+    //     }
+    //     return "";
+    // }
     /**
      * Opens welcome screen that starts our gui
      */
@@ -192,17 +192,17 @@ public class demo extends JFrame {
         });
         takeOrder.setBounds(25, 50, 300, 100);
 
-        JButton addItem = new JButton("Add Seasonal Item");
-        addItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // add seasonal item screen;
-                seasonal_item();
-                frame.setVisible(false);
+        // JButton addItem = new JButton("Add Seasonal Item");
+        // addItem.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         // add seasonal item screen;
+        //         // seasonal_item();
+        //         frame.setVisible(false);
 
-            }
-        });
-        addItem.setBounds(675, 50, 300, 100);
+        //     }
+        // });
+        // addItem.setBounds(675, 50, 300, 100);
         
         JButton viewInventory = new JButton("View Inventory");
         viewInventory.addActionListener(new ActionListener() {
@@ -216,41 +216,41 @@ public class demo extends JFrame {
         });
         viewInventory.setBounds(350, 50, 300, 100);
 
-        JButton salesReportInput = new JButton("Sales Report");
-        viewInventory.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // see inventory screen;
-                sales_report_input();
-                frame.setVisible(false);
+        // JButton salesReportInput = new JButton("Sales Report");
+        // viewInventory.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         // see inventory screen;
+        //         // sales_report_input();
+        //         frame.setVisible(false);
                 
-            }
-        });
-        viewInventory.setBounds(350, 50, 300, 100);
+        //     }
+        // });
+        // viewInventory.setBounds(350, 50, 300, 100);
 
-        JButton excessReportInput = new JButton("Excess Report");
-        viewInventory.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // see inventory screen;
-                sales_report_input();
-                frame.setVisible(false);
+        // JButton excessReportInput = new JButton("Excess Report");
+        // viewInventory.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         // see inventory screen;
+        //         // sales_report_input();
+        //         frame.setVisible(false);
                 
-            }
-        });
-        viewInventory.setBounds(350, 50, 300, 100);
+        //     }
+        // });
+        // viewInventory.setBounds(350, 50, 300, 100);
 
-        JButton restockReport = new JButton("Restock Report");
-        viewInventory.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // see inventory screen;
-                sales_report_input();
-                frame.setVisible(false);
+        // JButton restockReport = new JButton("Restock Report");
+        // viewInventory.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         // see inventory screen;
+        //         // sales_report_input();
+        //         frame.setVisible(false);
                 
-            }
-        });
-        viewInventory.setBounds(350, 50, 300, 100);
+        //     }
+        // });
+        // viewInventory.setBounds(350, 50, 300, 100);
 
         JButton exit = new JButton("Exit to Main Screen");
         exit.setBounds(25, 700, 425, 100);
@@ -265,10 +265,10 @@ public class demo extends JFrame {
         frame.add(takeOrder);
         // frame.add(addItem);
         frame.add(viewInventory);
-        frame.add(salesReportInput);
-        frame.add(excessReportInput);
-        frame.add(restockReport);
-        frame.add(addItem);
+        // frame.add(salesReportInput);
+        // frame.add(excessReportInput);
+        // frame.add(restockReport);
+        // frame.add(addItem);
         frame.add(exit);
 
         frame.setSize(1000, 1000);
@@ -424,7 +424,7 @@ public class demo extends JFrame {
         update.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Update " + changes.size());
+                // System.out.println("Update " + changes.size());
                 update_inventory(changes);
             }
         });
@@ -437,9 +437,9 @@ public class demo extends JFrame {
         tableModel.addTableModelListener(new TableModelListener() {
     
             public void tableChanged(TableModelEvent e) {
-                // if (e.getType() != e.UPDATE) {
-                //     return;
-                // }
+                if (e.getType() != TableModelEvent.UPDATE) {
+                    return;
+                }
 
                 int colChanged = e.getColumn();
                 if (colChanged == 0) {
@@ -466,7 +466,7 @@ public class demo extends JFrame {
                 entryChange.add(item);
                 entryChange.add(stock);
                 
-                System.out.println(tblName + " " + inventoryTable.get(rowChanged).get(0) + " " + inventoryTable.get(rowChanged).get(1));
+                // System.out.println(tblName + " " + inventoryTable.get(rowChanged).get(0) + " " + inventoryTable.get(rowChanged).get(1));
                 
                 changes.add(entryChange);
             }
@@ -490,68 +490,6 @@ public class demo extends JFrame {
         return 0;
     }
 
-    public static void update_inventory(Vector<Vector<String>> changes) {
-        Connection conn = null;
-        String teamNumber = "14";
-        String sectionNumber = "912";
-        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
-        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
-
-        // Connecting to the database
-        try {
-            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        // System.out.println("Test 1");
-        try {
-           
-            for (int r = 0; r < changes.size(); r++) {
-                // System.out.println("Test 2");
-                String tblName = changes.get(r).get(0);
-                String item = changes.get(r).get(1);
-                String stock = changes.get(r).get(2);
-
-                String sqlQuery = "";
-                Statement stmt = conn.createStatement();
-                
-                try {
-                    if (Integer.parseInt(stock) < 0) {
-                        continue;
-                    }
-                }
-                catch (NumberFormatException e) {
-                    continue;
-                }
-                
-                if (tblName.equals("Entrees")) {
-                    sqlQuery = "UPDATE \"Entrees\" SET \"Entree Inventory\"=" + stock + " WHERE \"Entree Items\"='" + item + "'";
-                } else if (tblName.equals("Dressings")) {
-                    sqlQuery = "UPDATE \"Dressings\" SET \"Dressing Inventory\"=" + stock + " WHERE \"Dressing Item\"='" + item + "'";
-                } else if (tblName.equals("Drinks")) {
-                    sqlQuery = "UPDATE \"Drinks\" SET \"Drink Inventory\"=" + stock + " WHERE \"Drink Item\"='" + item + "'";
-                } else if (tblName.equals("Starters")) {
-                    sqlQuery = "UPDATE \"Starters\" SET \"Starter Inventory\"=" + stock + " WHERE \"Starter Item\"='" + item + "'";
-                } else if (tblName.equals("Toppings")) {
-                    sqlQuery = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
-                }
-                
-                // System.out.println(sqlQuery);
-                stmt.executeUpdate(sqlQuery);
-            }
-        } catch (Exception e) {
-            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        try {
-            conn.close();
-            // System.out.println("Connection Closed.");
-        } catch (Exception e) {
-            // System.out.println("Connection NOT Closed.");
-        }
-    }
 
     /**
      * Loads the entree screen
@@ -1260,7 +1198,7 @@ public class demo extends JFrame {
         frame.add(payment);
         frame.add(toppings);
 
-        frame.add(noStarter);
+        // frame.add(noStarter);
         frame.add(falStart);
         frame.add(hummus);
         frame.add(vegan);
@@ -1275,183 +1213,7 @@ public class demo extends JFrame {
         frame.setVisible(true); // making the frame visible
     }
 
-    /**
-    * Shows the view/edit inventory screen
-     */
-    public static int view_inventory() {
-        JFrame frame = new JFrame("VIEW/EDIT INVENTORY");
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        Connection conn = null;
-        String teamNumber = "14";
-        String sectionNumber = "912";
-        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
-        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
-
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            return 1;
-        }
-        // System.out.println("Opened database successfully");
-
-        Vector<Vector<String>> inventoryTable = new Vector<>();
-        int[] partitions = new int[4];
-        int line = 0;
-        try {
-            String sqlQuery = "select * from \"Entrees\"";
-            Statement stmt = conn.createStatement();
-            ResultSet result = stmt.executeQuery(sqlQuery);
-            while (result.next()) {
-                Vector<String> entry = new Vector<>();
-                entry.add(result.getString("Entree Items"));
-                entry.add(result.getString("Entree Inventory"));
-                inventoryTable.add(entry);
-                line++;
-            }
-            partitions[0] = line;
-
-            sqlQuery = "select * from \"Dressings\" where \"Dressing Item\" != 'None'";
-            stmt = conn.createStatement();
-            result = stmt.executeQuery(sqlQuery);
-            while (result.next()) {
-                Vector<String> entry = new Vector<>();
-                entry.add(result.getString("Dressing Item"));
-                entry.add(result.getString("Dressing Inventory"));
-                inventoryTable.add(entry);
-                line++;
-            }
-            partitions[1] = line;
-
-            sqlQuery = "select * from \"Drinks\" where \"Drink Item\" != 'None'";
-            stmt = conn.createStatement();
-            result = stmt.executeQuery(sqlQuery);
-            while (result.next()) {
-                Vector<String> entry = new Vector<>();
-                entry.add(result.getString("Drink Item"));
-                entry.add(result.getString("Drink Inventory"));
-                inventoryTable.add(entry);
-                line++;
-            }
-            partitions[2] = line;
-
-            sqlQuery = "select * from \"Starters\" where \"Starter Item\" != 'None'";
-            stmt = conn.createStatement();
-            result = stmt.executeQuery(sqlQuery);
-            while (result.next()) {
-                Vector<String> entry = new Vector<>();
-                entry.add(result.getString("Starter Item"));
-                entry.add(result.getString("Starter Inventory"));
-                inventoryTable.add(entry);
-                line++;
-            }
-            partitions[3] = line;
-
-            sqlQuery = "select * from \"Toppings\" where \"Topping Item\" != 'None'";
-            stmt = conn.createStatement();
-            result = stmt.executeQuery(sqlQuery);
-            while (result.next()) {
-                Vector<String> entry = new Vector<>();
-                entry.add(result.getString("Topping Item"));
-                entry.add(result.getString("Topping Inventory"));
-                inventoryTable.add(entry);
-            }
-        } catch (Exception e) {
-            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            return 2;
-        }
-        // System.out.println("Passed query successfully");
-
-        try {
-            conn.close();
-            // System.out.println("Connection Closed.");
-        } catch (Exception e) {
-            // System.out.println("Connection NOT Closed.");
-        }
-        
-        Vector<Vector<String>> changes = new Vector<>();
-        JButton exit = new JButton("Exit to Manager Screen");
-        exit.setBounds(0, 800, 500, 100);
-        exit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                manager_view();
-                frame.setVisible(false);
-            }
-        });
-        JButton update = new JButton("Update inventory changes");
-        update.setBounds(500, 800, 500, 100);
-        update.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // System.out.println("Update");
-                update_inventory(changes);
-            }
-        });
-
-        Vector<String> columnNames = new Vector<>();
-        columnNames.add("Item");
-        columnNames.add("Stock");
-
-        DefaultTableModel tableModel = new DefaultTableModel(inventoryTable, columnNames);
-        tableModel.addTableModelListener(new TableModelListener() {
     
-            public void tableChanged(TableModelEvent e) {
-                if (e.getType() != e.UPDATE) {
-                    return;
-                }
-
-                int colChanged = e.getColumn();
-                if (colChanged == 0) {
-                    return;
-                }
-                
-                int rowChanged = e.getFirstRow();
-                String tblName = "";
-                if (rowChanged >= partitions[3]) {
-                    tblName = "Toppings";
-                } else if (rowChanged >= partitions[2]) {
-                    tblName = "Starters";
-                } else if (rowChanged >= partitions[1]) {
-                    tblName = "Drinks";
-                } else if (rowChanged >= partitions[0]) {
-                    tblName = "Dressings";
-                } else {
-                    tblName = "Entrees";
-                }
-                Vector<String> entryChange = new Vector<>();
-                String item = inventoryTable.get(rowChanged).get(0);
-                String stock = inventoryTable.get(rowChanged).get(1);
-                entryChange.add(tblName);
-                entryChange.add(item);
-                entryChange.add(stock);
-                
-                // System.out.println(tblName + " " + inventoryTable.get(rowChanged).get(0) + " " + inventoryTable.get(rowChanged).get(1));
-                
-                changes.add(entryChange);
-            }
-        }); 
-        JTable table = new JTable(tableModel);
-        // table.setBounds(50, 50, 1000, 1000);
-        
-
-
-        JScrollPane sp = new JScrollPane(table);
-        sp.setBounds(0, 0, 1000, 1000);
-
-        frame.add(exit);
-        frame.add(update);
-        frame.add(sp);
-
-        frame.setSize(1000, 1000);
-        frame.setLayout(null);
-        frame.setVisible(true);
-
-        return 0;
-    }
 
     /**
      * Places the order and acts as the payment screen
@@ -1489,46 +1251,46 @@ public class demo extends JFrame {
         frame.setVisible(true); // making the frame visible
     }
     
-    public static void sales_report_input() {
-        JFrame frame = new JFrame("SALES REPORT: INPUT");
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    // public static void sales_report_input() {
+    //     JFrame frame = new JFrame("SALES REPORT: INPUT");
+    //     frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JLabel dateLabel1 = new JLabel("Enter in the beginning date:");
-        UtilDateModel startDateModel = new UtilDateModel();
-        startDateModel.setDate(2022,8,1);
-        startDateModel.setSelected(true);
-        JDatePanelImpl startDatePanel = new JDatePanelImpl(startDateModel);
-        JDatePickerImpl startDatePicker = new JDatePanelPickerImpl(startDatePanel, new DateLabelFormatter());
+    //     JLabel dateLabel1 = new JLabel("Enter in the beginning date:");
+    //     UtilDateModel startDateModel = new UtilDateModel();
+    //     startDateModel.setDate(2022,8,1);
+    //     startDateModel.setSelected(true);
+    //     JDatePanelImpl startDatePanel = new JDatePanelImpl(startDateModel);
+    //     JDatePickerImpl startDatePicker = new JDatePanelPickerImpl(startDatePanel, new DateLabelFormatter());
 
-        JLabel dateLabel2 = new JLabel("Enter in the ending date:");
-        UtilDateModel endDateModel = new UtilDateModel();
-        endDateModel.setDate(2022,8,20);
-        endDateModel.setSelected(true);
-        JDatePanelImpl endDatePanel = new JDatePanelImpl(endDateModel);
-        JDatePickerImpl endDatePicker = new JDatePickerImpl(endDatePicker, new DateLabelFormatter());
+    //     JLabel dateLabel2 = new JLabel("Enter in the ending date:");
+    //     UtilDateModel endDateModel = new UtilDateModel();
+    //     endDateModel.setDate(2022,8,20);
+    //     endDateModel.setSelected(true);
+    //     JDatePanelImpl endDatePanel = new JDatePanelImpl(endDateModel);
+    //     JDatePickerImpl endDatePicker = new JDatePickerImpl(endDatePicker, new DateLabelFormatter());
 
-        JButton salesReport = new JButton("Sales Report");// if pressed pos displays menu_screen
-        salesReport.setBounds(50, 50, 825, 200);
-        salesReport.setFont(new Font("Arial", Font.BOLD, 40));
-        salesReport.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Date startingDate = (Date) startDatePicker.getModel().getValue();
-                Date endingDate = (Date) endDatePicker.getModel().getValue();
-                sales_report();
-                frame.setVisible(false);
-            }
-        });
+    //     JButton salesReport = new JButton("Sales Report");// if pressed pos displays menu_screen
+    //     salesReport.setBounds(50, 50, 825, 200);
+    //     salesReport.setFont(new Font("Arial", Font.BOLD, 40));
+    //     salesReport.addActionListener(new ActionListener() {
+    //         @Override
+    //         public void actionPerformed(ActionEvent e) {
+    //             Date startingDate = (Date) startDatePicker.getModel().getValue();
+    //             Date endingDate = (Date) endDatePicker.getModel().getValue();
+    //             sales_report();
+    //             frame.setVisible(false);
+    //         }
+    //     });
 
-        frame.add(dateLabel1);
-        frame.add(startDatePicker);
-        frame.add(dateLabel2);
-        frame.add(endDatePicker);
+    //     frame.add(dateLabel1);
+    //     frame.add(startDatePicker);
+    //     frame.add(dateLabel2);
+    //     frame.add(endDatePicker);
 
-        frame.setSize(1000,1000);
-        frame.setLayout(null);
-        frame.setVisible(true);
-    }
+    //     frame.setSize(1000,1000);
+    //     frame.setLayout(null);
+    //     frame.setVisible(true);
+    // }
 
     public static void sales_report() {
         JFrame frame = new JFrame("SALES REPORT");
@@ -1539,41 +1301,41 @@ public class demo extends JFrame {
         frame.setVisible(true);
     }
 
-    public static void seasonal_item(){
-        JFrame frame = new JFrame("ADD SEASONAL ITEM");
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    // public static void seasonal_item(){
+    //     JFrame frame = new JFrame("ADD SEASONAL ITEM");
+    //     frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     
-        String[] typeStrings= {"Entree Type","Entree Protein", "Drink", "Starter"}; 
-        JLabel typeLabel = new JLabel("What type of seasonal item would you like to add?");
-        JComboBox typeBox =new JComboBox(typeStrings);
-        /*typeBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+    //     String[] typeStrings= {"Entree Type","Entree Protein", "Drink", "Starter"}; 
+    //     JLabel typeLabel = new JLabel("What type of seasonal item would you like to add?");
+    //     // JComboBox typeBox =new JComboBox(typeStrings);
+    //     /*typeBox.addActionListener(new ActionListener() {
+    //         @Override
+    //         public void actionPerformed(ActionEvent e) {
                 
-            }
-        });*/
+    //         }
+    //     });*/
         
-        /*NOT FORMATTED FORMAT BEFORE SUBMISSION */
-        JLabel inventoryLabel = new JLabel("How many would you like to add?");
-        JTextField inventoryAmnt = new JTextField(20);
-        JLabel priceLabel = new JLabel("If the item is a drink or a starter please add a price");
-        JTextField price = new JTextField(20);
+    //     /*NOT FORMATTED FORMAT BEFORE SUBMISSION */
+    //     JLabel inventoryLabel = new JLabel("How many would you like to add?");
+    //     JTextField inventoryAmnt = new JTextField(20);
+    //     JLabel priceLabel = new JLabel("If the item is a drink or a starter please add a price");
+    //     JTextField price = new JTextField(20);
 
-        JButton goBack=new JButton("Go Back");
-        JButton addSeasonal= new JButton("Add Seasonal");
+    //     JButton goBack=new JButton("Go Back");
+    //     JButton addSeasonal= new JButton("Add Seasonal");
         
-        frame.add(typeLabel);
-        frame.add(inventoryLabel);
-        frame.add(priceLabel);
+    //     frame.add(typeLabel);
+    //     frame.add(inventoryLabel);
+    //     frame.add(priceLabel);
 
-        frame.add(typeBox);
-        frame.add(inventoryAmnt);
-        frame.add(price);
+    //     frame.add(typeBox);
+    //     frame.add(inventoryAmnt);
+    //     frame.add(price);
 
-        frame.setSize(1000, 1000);
-        frame.setLayout(null); // using no layout managers
-        frame.setVisible(true);
-    }
+    //     frame.setSize(1000, 1000);
+    //     frame.setLayout(null); // using no layout managers
+    //     frame.setVisible(true);
+    // }
 
     public static void main(String[] args) {
         // JFrame frame;

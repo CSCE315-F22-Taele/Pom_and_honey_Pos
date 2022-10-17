@@ -10,7 +10,7 @@ public class drink {
     private int[] drinksInventoryList = { 0, 0, 0 };
 
     private String seasonalFlavor="";
-    private double seasonal price=0;
+    // private double seasonal price=0;
     
     public drink(int flavorId) { // itemId shold be enough to set name and price
         setFlavor(flavorId);// dry coding :)
