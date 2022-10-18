@@ -502,6 +502,8 @@ public class demo extends JFrame {
         JLabel dateLabel2 = new JLabel("Enter in the ending date (yyyy-mm-dd format): ");
         dateLabel2.setBounds(50, 70, 450, 200);
         dateLabel2.setFont(new Font("Arial", Font.BOLD, 16));
+
+        
         
         JTextField date2 = new JTextField();
         date2.setBounds(450, 160, 200, 25);
@@ -1565,6 +1567,26 @@ public class demo extends JFrame {
                 // System.out.println("Connection NOT Closed.");
             }
         }
+    }
+
+    public static void displayMessage(String msg) {
+        JWindow w = new JWindow();
+        JLabel l = new JLabel(msg);
+        JButton b = new JButton("OK");
+        b.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                w.setVisible(false);
+            }
+        });
+
+        JPanel p = new JPanel();
+        p.add(l);
+        p.add(b);
+        
+        w.add(p);
+        w.setSize(200, 100);
+        w.setVisible(true);
     }
 
     public static void main(String[] args) {
