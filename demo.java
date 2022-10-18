@@ -706,7 +706,7 @@ public class demo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {// assumint that stuff is chosen correctly to start
                 if(protein==-1){
-                    theOrder=new order(type*-1);
+                    theOrder=new order(type*-1-1);
                 }
                 else{
                     theOrder = new order(type + protein);
@@ -1495,8 +1495,8 @@ public class demo extends JFrame {
     }
     public static void validate_seasonal(int error){
         JFrame frame;
-        String[] messages= {"Item added successfully", "Please enter a valid amount", "Please enter a valid price","Please enter a name"};
-        if(error==0){
+        String[] messages= {"Item added successfully", "Please enter a valid amount", "Please enter a valid price","Please enter a name","Successfuly Deleted"};
+        if(error==0||error==4){
             frame=new JFrame("SUCCESS");
         }
         else{
