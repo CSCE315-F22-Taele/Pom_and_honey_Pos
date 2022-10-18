@@ -310,6 +310,9 @@ public class demo extends JFrame {
         frame.setVisible(true); // making the frame visible
     }
 
+    /**
+    * Shows the view/edit inventory screen
+     */
     public static int view_inventory() {
         JFrame frame = new JFrame("VIEW/EDIT INVENTORY");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -487,6 +490,9 @@ public class demo extends JFrame {
         return 0;
     }
 
+    /**
+    * Shows the screen where the Sales Report input is provided
+     */
     public static void sales_report_input() {
         JFrame frame = new JFrame("SALES REPORT: INPUT");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -556,10 +562,61 @@ public class demo extends JFrame {
         frame.setVisible(true);
     }
 
+    /**
+    * Shows the screen where the Excess Report input is provided
+     */
     public static void excess_report_input() {
         JFrame frame = new JFrame("EXCESS REPORT: INPUT");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
+
+        JLabel dateLabel1 = new JLabel("Enter in the start date (yyyy-mm-dd format): ");
+        dateLabel1.setBounds(50, 20, 450, 200);
+        dateLabel1.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JTextField date1 = new JTextField();
+        date1.setBounds(450, 110, 200, 25);
+        date1.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JButton excessReport = new JButton("Generate Excess Report");// if pressed pos displays sales_report
+        excessReport.setBackground(Color.BLUE);
+        excessReport.setBounds(700, 105, 225, 80);
+        excessReport.setFont(new Font("Arial", Font.BOLD, 17));
+        // salesReport.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         //month1.getText(), day1.getText(), year1.getText(), month2.getText(), day2.getText(), year2.getText()
+        //         Connection conn = null;
+        //         String teamNumber = "14";
+        //         String sectionNumber = "912";
+        //         String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        //         String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+
+        //         try {
+        //             Class.forName("org.postgresql.Driver");
+        //             conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        //         } catch (Exception err) {
+        //             err.printStackTrace();
+        //             System.err.println(e.getClass().getName() + ": " + err.getMessage());
+        //             return;
+        //         }
+        //         System.out.println("Opened database successfully");
+        //     }
+        // });
+
+        JButton exit = new JButton("Exit to Manager View");
+        exit.setBounds(25, 700, 425, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                manager_view();
+                frame.setVisible(false);
+            }
+        });
+
+        frame.add(dateLabel1);
+        frame.add(date1);
+        frame.add(excessReport);
+        frame.add(exit);
         frame.setSize(1000,1000);
         frame.setLayout(null);
         frame.setVisible(true);
