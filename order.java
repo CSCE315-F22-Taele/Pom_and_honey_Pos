@@ -22,7 +22,7 @@ public class order {
         this.entreeId = entreeId;
         if(entreeId<0){
             entreeId*=-1;
-            orderEntree=new entree(entreeId/5);
+            orderEntree=new entree((entreeId-1)/5);
             orderEntree.setProtein(-1);
         }
         else if (entreeId < 20) {

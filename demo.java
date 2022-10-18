@@ -891,7 +891,7 @@ public class demo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {// assumint that stuff is chosen correctly to start
                 if(protein==-1){
-                    theOrder=new order(type*-1);
+                    theOrder=new order(type*-1-1);
                 }
                 else{
                     theOrder = new order(type + protein);
@@ -1554,6 +1554,192 @@ public class demo extends JFrame {
     //     frame.setLayout(null);
     //     frame.setVisible(true);
     // }
+
+    public static void sales_report() {
+        JFrame frame = new JFrame("SALES REPORT");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        frame.setSize(1000,1000);
+        frame.setLayout(null);
+        frame.setVisible(true);
+    }
+
+    public static void seasonal_item(){
+        JFrame frame = new JFrame("ADD SEASONAL ITEM");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    
+        String[] typeStrings= {"Protein", "Drink", "Starter"}; 
+        JLabel typeLabel = new JLabel("What type of seasonal item would you like to add?");
+        typeLabel.setFont(new Font("Arial",Font.BOLD,20));
+        typeLabel.setBounds(250,25,600,50);
+        JComboBox typeBox =new JComboBox(typeStrings);
+        typeBox.setBounds(350,100,300,50);
+        
+        JLabel inventoryLabel = new JLabel("How many would you like to add?");
+        inventoryLabel.setFont(new Font("Arial",Font.BOLD,20));
+        inventoryLabel.setBounds(340,200,350,50);
+        JTextField inventoryAmnt = new JTextField(50);
+        inventoryAmnt.setBounds(350,275,300,50);
+
+        JLabel priceLabel = new JLabel("If the item is a Starter please enter a price");
+        priceLabel.setFont(new Font("Arial",Font.BOLD,20));
+        priceLabel.setBounds(265,350,600,50);
+        JTextField price = new JTextField(20);
+        price.setBounds(350,425,300,50);
+
+        JLabel nameLabel = new JLabel("Please name this new item");
+        nameLabel.setFont(new Font("Arial",Font.BOLD,20));
+        nameLabel.setBounds(370,500,350,50);
+        JTextField name = new JTextField(50);
+        name.setBounds(350,575,300,50);
+
+        JButton exit = new JButton("Exit to Manager Screen");
+        exit.setBounds(0, 800, 500, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                manager_view();
+                frame.setVisible(false);
+            }
+        });
+        JButton update = new JButton("Add Item");
+        update.setBounds(500, 800, 500, 100);
+        update.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String itemT=typeBox.getSelectedItem().toString();
+                String inv=inventoryAmnt.getText();
+                String cost=price.getText();
+                String itemName=name.getText();
+
+                int invInt=0;
+                Double costDub=0.0;
+                int error=0;
+                if(inv.length()==0){
+                    error=1;
+                }
+                else{
+                    try{
+                        Integer.parseInt(inv);
+                    }
+                    catch(NumberFormatException f){
+                        error=1;
+                    }
+                    if(error==0){
+                        invInt=Integer.parseInt(inv);
+                        if(invInt<=0){
+                            error=1;
+                        }
+                    }
+                }
+                if(error==0 && itemT.equals("Starter")){
+                    try{
+                        Double.parseDouble(cost);
+                    }
+                    catch(NumberFormatException f){
+                        error=2;
+                    }
+                    if(error==0){
+                        costDub=Double.parseDouble(cost);
+                        if(costDub<0){
+                            error=2;
+                        }
+                    }
+                }
+                if(error==0 && itemName.length()==0){
+                    error=3;
+                }
+                validate_seasonal(error);//this displays error/success for input validation
+                if(error==0){
+                    String sqlInput = "INSERT INTO \"PromotionalItem\" (\"Promotional Item Name\", \"Item type\", \"Item Price\", \"Item inventory\" ) values ('"
+                + itemName + "' , '"+ itemT +"'," + costDub + "," + invInt + ");";
+                jdbcpostgreSQL.seasonalQuery(sqlInput);
+                manager_view();
+                frame.setVisible(false);
+                }
+                
+            }
+        });
+        
+        frame.add(typeLabel);
+        frame.add(inventoryLabel);
+        frame.add(priceLabel);
+        frame.add(nameLabel);
+
+        frame.add(typeBox);
+        frame.add(inventoryAmnt);
+        frame.add(price);
+        frame.add(name);
+
+        frame.add(exit);
+        frame.add(update);
+
+        frame.setSize(1000, 1000);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true);
+    }
+    public static void validate_seasonal(int error){
+        JFrame frame;
+        String[] messages= {"Item added successfully", "Please enter a valid amount", "Please enter a valid price","Please enter a name","Successfuly Deleted"};
+        if(error==0||error==4){
+            frame=new JFrame("SUCCESS");
+        }
+        else{
+            frame= new JFrame("ERROR!");
+        }
+
+        JLabel msgLabel = new JLabel(messages[error]);
+        msgLabel.setFont(new Font("Arial",Font.BOLD,20));
+        msgLabel.setBounds(25,50,450,50);
+
+        frame.add(msgLabel);
+
+        frame.setSize(500, 200);
+        frame.setLayout(null); // using no layout managers
+        frame.setVisible(true);
+    }
+    public static void setSeasonal(){
+        if(jdbcpostgreSQL.seasonalCountQuery()==0){
+            seasonalExists=false;
+            return;
+        }
+        else{
+            seasonalExists=true;
+            Connection conn = null;
+            String teamNumber = "14";
+            String sectionNumber = "912";
+            String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+            String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+
+            // Connecting to the database
+            try {
+                conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                System.exit(0);
+            }
+
+            try {        
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM \"PromotionalItem\"");
+                rs.next();
+                seasonalName=rs.getString("Promotional Item Name");
+                seasonalType=rs.getString("Item type");
+                
+
+            } catch (Exception e) {
+                // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+
+            try {
+                conn.close();
+                // System.out.println("Connection Closed.");
+            } catch (Exception e) {
+                // System.out.println("Connection NOT Closed.");
+            }
+        }
+    }
 
     public static void main(String[] args) {
         // JFrame frame;
