@@ -195,7 +195,7 @@ public class demo extends JFrame {
             public void actionPerformed(ActionEvent e) {
             // add seasonal item screen;
                 jdbcpostgreSQL.orderQuery("DELETE FROM \"PromotionalItem\"");
-
+                displayMessage("Seasonal Item Removed Successfully!");
              }
         });
         clearItem.setBounds(675, 175, 300, 100);
@@ -224,28 +224,28 @@ public class demo extends JFrame {
         salesReportInput.setBounds(350, 175, 300, 100);
 
         JButton excessReportInput = new JButton("Excess Report");
-        viewInventory.addActionListener(new ActionListener() {
+        excessReportInput.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // see inventory screen;
-                // excess_report_input();
+                excess_report_input();
                 frame.setVisible(false);
                 
             }
         });
-        viewInventory.setBounds(350, 50, 300, 100);
+        excessReportInput.setBounds(25, 175, 300, 100);
 
-        // JButton restockReport = new JButton("Restock Report");
-        // viewInventory.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         // see inventory screen;
-        //         // sales_report_input();
-        //         frame.setVisible(false);
+        JButton restockReport = new JButton("Restock Report");
+        restockReport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // see restock screen;
+                restock_report();
+                frame.setVisible(false);
                 
-        //     }
-        // });
-        // viewInventory.setBounds(350, 50, 300, 100);
+            }
+        });
+        restockReport.setBounds(25, 300, 300, 100);
 
         JButton exit = new JButton("Exit to Main Screen");
         exit.setBounds(25, 700, 425, 100);
@@ -260,8 +260,8 @@ public class demo extends JFrame {
         frame.add(takeOrder);
         frame.add(viewInventory);
         frame.add(salesReportInput);
-        // frame.add(excessReportInput);
-        // frame.add(restockReport);
+        frame.add(excessReportInput);
+        frame.add(restockReport);
         frame.add(addItem);
         frame.add(clearItem);
         frame.add(exit);
@@ -290,7 +290,7 @@ public class demo extends JFrame {
 
             }
         });
-        takeOrder.setBounds(100, 100, 100, 100);
+        takeOrder.setBounds(250, 250, 450, 150);
 
         JButton exit = new JButton("Exit to Main Screen");
         exit.setBounds(25, 700, 425, 100);
@@ -491,7 +491,7 @@ public class demo extends JFrame {
     }
 
     /**
-    * Shows the screen where the Sales Report input is provided
+    * Calls the Sales Report Input screen where a starting and ending dates are provided and then the resulting Sales Report is shown
      */
     public static void sales_report_input() {
         JFrame frame = new JFrame("SALES REPORT: INPUT");
@@ -522,7 +522,12 @@ public class demo extends JFrame {
         salesReport.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //month1.getText(), day1.getText(), year1.getText(), month2.getText(), day2.getText(), year2.getText()
+                // if (!verifyDates(date1.getText(), date2.getText())) {
+                //     return;
+                // }
+
+                Vector<Vector<String>> inventoryTable = new Vector<>();
+                
                 Connection conn = null;
                 String teamNumber = "14";
                 String sectionNumber = "912";
@@ -534,81 +539,75 @@ public class demo extends JFrame {
                     conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
                 } catch (Exception err) {
                     err.printStackTrace();
-                    System.err.println(e.getClass().getName() + ": " + err.getMessage());
+                    // System.err.println(err.getClass().getName() + ": " + err.getMessage());
                     return;
                 }
-                System.out.println("Opened database successfully");
+                // System.out.println("Opened database successfully");
 
                 try {
-                    String sqlQuery = "select * from \"Entrees\"";
+                    String sqlQuery = "SELECT  \"Entrees\".\"Entree Items\", count(\"Order ID\") From \"Order\" Inner Join \"Entrees\" on \"Order\".\"Entree ID\" = \"Entrees\".\"Entree ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Entrees\".\"Entree Items\" order by \"Entrees\".\"Entree Items\"";
                     Statement stmt = conn.createStatement();
                     ResultSet result = stmt.executeQuery(sqlQuery);
                     while (result.next()) {
                         Vector<String> entry = new Vector<>();
                         entry.add(result.getString("Entree Items"));
-                        entry.add(result.getString("Entree Inventory"));
+                        entry.add(result.getString("count"));
                         inventoryTable.add(entry);
-                        line++;
                     }
-                    partitions[0] = line;
-        
-                    sqlQuery = "select * from \"Dressings\" where \"Dressing Item\" != 'None'";
+
+                    sqlQuery = "SELECT  \"Dressings\".\"Dressing Item\", count(\"Order ID\") From \"Order\" Inner Join \"Dressings\" on \"Order\".\"Dressing ID\" = \"Dressings\".\"Dressing ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Dressings\".\"Dressing Item\" order by \"Dressings\".\"Dressing Item\"";
                     stmt = conn.createStatement();
                     result = stmt.executeQuery(sqlQuery);
                     while (result.next()) {
                         Vector<String> entry = new Vector<>();
                         entry.add(result.getString("Dressing Item"));
-                        entry.add(result.getString("Dressing Inventory"));
+                        entry.add(result.getString("count"));
                         inventoryTable.add(entry);
-                        line++;
                     }
-                    partitions[1] = line;
-        
-                    sqlQuery = "select * from \"Drinks\" where \"Drink Item\" != 'None'";
+
+                    sqlQuery = "SELECT  \"Drinks\".\"Drink Item\", count(\"Order ID\") From \"Order\" Inner Join \"Drinks\" on \"Order\".\"Drinks ID\" = \"Drinks\".\"Drink ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Drinks\".\"Drink Item\" order by \"Drinks\".\"Drink Item\"";
                     stmt = conn.createStatement();
                     result = stmt.executeQuery(sqlQuery);
                     while (result.next()) {
                         Vector<String> entry = new Vector<>();
                         entry.add(result.getString("Drink Item"));
-                        entry.add(result.getString("Drink Inventory"));
+                        entry.add(result.getString("count"));
                         inventoryTable.add(entry);
-                        line++;
                     }
-                    partitions[2] = line;
-        
-                    sqlQuery = "select * from \"Starters\" where \"Starter Item\" != 'None'";
+
+                    sqlQuery = "SELECT  \"Starters\".\"Starter Item\", count(\"Order ID\") From \"Order\" Inner Join \"Starters\" on \"Order\".\"Starter ID\" = \"Starters\".\"Starter ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Starters\".\"Starter Item\" order by \"Starters\".\"Starter Item\"";
                     stmt = conn.createStatement();
                     result = stmt.executeQuery(sqlQuery);
                     while (result.next()) {
                         Vector<String> entry = new Vector<>();
                         entry.add(result.getString("Starter Item"));
-                        entry.add(result.getString("Starter Inventory"));
-                        inventoryTable.add(entry);
-                        line++;
-                    }
-                    partitions[3] = line;
-        
-                    sqlQuery = "select * from \"Toppings\" where \"Topping Item\" != 'None'";
-                    stmt = conn.createStatement();
-                    result = stmt.executeQuery(sqlQuery);
-                    while (result.next()) {
-                        Vector<String> entry = new Vector<>();
-                        entry.add(result.getString("Topping Item"));
-                        entry.add(result.getString("Topping Inventory"));
+                        entry.add(result.getString("count"));
                         inventoryTable.add(entry);
                     }
-                } catch (Exception e) {
-                    // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                    return 2;
+                } catch (Exception ex) {
+                    // System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+                    return;
                 }
                 // System.out.println("Passed query successfully");
-        
+                
                 try {
                     conn.close();
                     // System.out.println("Connection Closed.");
-                } catch (Exception e) {
+                } catch (Exception ex) {
                     // System.out.println("Connection NOT Closed.");
+                    return;
                 }
+
+
+                Vector<String> columnNames = new Vector<>();
+                columnNames.add("Menu Item");
+                columnNames.add("Units Sold");
+
+                DefaultTableModel tableModel = new DefaultTableModel(inventoryTable, columnNames);
+                JTable table = new JTable(tableModel);
+                JScrollPane sp = new JScrollPane(table);
+                sp.setBounds(50, 200, 900, 475);
+                frame.add(sp);
             }
         });
 
@@ -632,9 +631,65 @@ public class demo extends JFrame {
         frame.setLayout(null);
         frame.setVisible(true);
     }
+    
+    /**
+     * Validates input dates by checking the SQL database for orders with both the start date and end date.
+     * 
+     * @param start start date in 'yyyy-mm-dd' format
+     * @param end end date in 'yyyy-mm-dd' format
+     * @return boolean showing whether the dates are valid
+     * 
+     */
+    public static boolean verifyDates(String start, String end) {
+    /*
+     This function takes dates in the format 'yyyy-mm-dd'. We were thinking of checking the database for if the dates exist. 
+     If they do, then the dates are valid. If not, then the dates are invalid. This allows us to skip any format validation. 
+     A problem arises if there are no sales recorded in the database for the date that is entered.
+    */
+        Connection conn = null;
+        String teamNumber = "14";
+        String sectionNumber = "912";
+        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+        try {
+            Class.forName("org.postgresql.Driver"); 
+            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        } catch (Exception err) {
+            err.printStackTrace();
+            System.err.println(err.getClass().getName() + ": " + err.getMessage());
+            return false; 
+        }
+        System.out.println("Opened database successfully");
+        try {
+            String sqlQuery = "SELECT  \"Entrees\".\"Entree Items\", count(\"Order ID\") From \"Order\" Inner Join \"Entrees\" on \"Order\".\"Entree ID\" = \"Entrees\".\"Entree ID\" where \"Date\"  between '2022-08-01' And '2022-08-04' group by \"Entrees\".\"Entree Items\" order by \"Entrees\".\"Entree Items\"";
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(sqlQuery);
+
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Dressing Item"));
+                entry.add(result.getString("Dressing Inventory"));
+            }
+        } catch (Exception ex) {
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return false;
+        }
+        // System.out.println("Passed query successfully");
+        
+        try {
+            conn.close();
+            // System.out.println("Connection Closed.");
+        } catch (Exception ex) {
+            // System.out.println("Connection NOT Closed.");
+            return false;
+        }
+
+        return false;
+    }
 
     /**
-    * Shows the screen where the Excess Report input is provided
+    * Calls the Excess Report Input screen where a starting date is provided and the subsequent Excess Report is shown
      */
     public static void excess_report_input() {
         JFrame frame = new JFrame("EXCESS REPORT: INPUT");
@@ -645,14 +700,14 @@ public class demo extends JFrame {
         dateLabel1.setFont(new Font("Arial", Font.BOLD, 16));
 
         JTextField date1 = new JTextField();
-        date1.setBounds(450, 110, 200, 25);
+        date1.setBounds(400, 108, 200, 27);
         date1.setFont(new Font("Arial", Font.BOLD, 16));
 
         JButton excessReport = new JButton("Generate Excess Report");// if pressed pos displays sales_report
         excessReport.setBackground(Color.BLUE);
-        excessReport.setBounds(700, 105, 225, 80);
+        excessReport.setBounds(625, 95, 220, 50);
         excessReport.setFont(new Font("Arial", Font.BOLD, 17));
-        // salesReport.addActionListener(new ActionListener() {
+        // excessReport.addActionListener(new ActionListener() {
         //     @Override
         //     public void actionPerformed(ActionEvent e) {
         //         //month1.getText(), day1.getText(), year1.getText(), month2.getText(), day2.getText(), year2.getText()
@@ -671,6 +726,8 @@ public class demo extends JFrame {
         //             return;
         //         }
         //         System.out.println("Opened database successfully");
+
+
         //     }
         // });
 
@@ -691,6 +748,40 @@ public class demo extends JFrame {
         frame.setSize(1000,1000);
         frame.setLayout(null);
         frame.setVisible(true);
+    }
+
+    /**
+    * Calls the Restock Report Screen where all items 
+     */
+    public static void restock_report() {
+        JFrame frame = new JFrame("RESTOCK INFO");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        JLabel restockTitle = new JLabel("Items to restock ");
+        restockTitle.setBounds(375, 20, 600, 180);
+        restockTitle.setFont(new Font("Arial", Font.BOLD, 25));
+
+        // ------ Restock function here ------
+        /*
+        
+        */
+        
+        
+        JButton exit = new JButton("Exit to Manager View");
+        exit.setBounds(25, 700, 425, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                manager_view();
+                frame.setVisible(false);
+            }
+        });
+
+        frame.add(restockTitle);
+        frame.add(exit);
+        frame.setSize(1000,1000);
+        frame.setLayout(null);
+        frame.setVisible(true);
+
     }
 
     /**
@@ -1711,7 +1802,9 @@ public class demo extends JFrame {
     public static void displayMessage(String msg) {
         JWindow w = new JWindow();
         JLabel l = new JLabel(msg);
+        l.setBounds(35,20,280, 40);
         JButton b = new JButton("OK");
+        b.setBounds(52,85, 180, 50);
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1722,10 +1815,13 @@ public class demo extends JFrame {
         JPanel p = new JPanel();
         p.add(l);
         p.add(b);
+        p.setLayout(null);
         
         w.add(p);
-        w.setSize(200, 100);
+        w.setSize(300, 150);
+        w.setLocation(350, 350);
         w.setVisible(true);
+        w.setLayout(null);
     }
 
     public static void main(String[] args) {

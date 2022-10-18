@@ -50,7 +50,8 @@ public class entree {
 
     public void addTopping(int toppingId) {
         if (numToppings == 4) {
-            System.out.println("Error too many toppings");
+            // System.out.println("Error too many toppings");
+            demo.displayMessage("Error: Too Many Toppings!");
         } else {
             toppings[numToppings] = toppingId;
             numToppings++;
