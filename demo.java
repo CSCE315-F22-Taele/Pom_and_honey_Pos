@@ -869,7 +869,7 @@ public class demo extends JFrame {
     }
 
     /**
-     * shows the topping choice menu
+     * Shows the topping choice menu
      */
     public static void toppings_screen() {
         int width = 164;
@@ -1445,7 +1445,9 @@ public class demo extends JFrame {
     }
     
     
-
+    /**
+    * Loads the seasonal item screen
+     */
     public static void seasonal_item(){
         JFrame frame = new JFrame("ADD SEASONAL ITEM");
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -1562,6 +1564,9 @@ public class demo extends JFrame {
         frame.setVisible(true);
     }
 
+    /**
+    * Helper function that provides input validation for seasonal item
+     */
     public static void validate_seasonal(int error){
         JFrame frame;
         String[] messages= {"Item added successfully", "Please enter a valid amount", "Please enter a valid price","Please enter a name","Successfuly Deleted"};
@@ -1583,6 +1588,9 @@ public class demo extends JFrame {
         frame.setVisible(true);
     }
     
+    /**
+    * Interfaces with the SQL database to produce the new seasonal item
+     */
     public static void setSeasonal(){
         if(jdbcpostgreSQL.seasonalCountQuery()==0){
             seasonalExists=false;
@@ -1626,6 +1634,9 @@ public class demo extends JFrame {
         }
     }
 
+    /**
+    * General boilerplate function for displaying a message
+     */
     public static void displayMessage(String msg) {
         JWindow w = new JWindow();
         JLabel l = new JLabel(msg);
