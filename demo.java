@@ -1493,6 +1493,7 @@ public class demo extends JFrame {
         frame.setLayout(null); // using no layout managers
         frame.setVisible(true);
     }
+
     public static void validate_seasonal(int error){
         JFrame frame;
         String[] messages= {"Item added successfully", "Please enter a valid amount", "Please enter a valid price","Please enter a name","Successfuly Deleted"};
@@ -1513,6 +1514,7 @@ public class demo extends JFrame {
         frame.setLayout(null); // using no layout managers
         frame.setVisible(true);
     }
+    
     public static void setSeasonal(){
         if(jdbcpostgreSQL.seasonalCountQuery()==0){
             seasonalExists=false;
