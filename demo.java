@@ -513,27 +513,98 @@ public class demo extends JFrame {
         salesReport.setBackground(Color.BLUE);
         salesReport.setBounds(700, 105, 225, 80);
         salesReport.setFont(new Font("Arial", Font.BOLD, 17));
-        // salesReport.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         //month1.getText(), day1.getText(), year1.getText(), month2.getText(), day2.getText(), year2.getText()
-        //         Connection conn = null;
-        //         String teamNumber = "14";
-        //         String sectionNumber = "912";
-        //         String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
-        //         String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+        salesReport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //month1.getText(), day1.getText(), year1.getText(), month2.getText(), day2.getText(), year2.getText()
+                Connection conn = null;
+                String teamNumber = "14";
+                String sectionNumber = "912";
+                String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+                String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
 
-        //         try {
-        //             Class.forName("org.postgresql.Driver");
-        //             conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
-        //         } catch (Exception err) {
-        //             err.printStackTrace();
-        //             System.err.println(e.getClass().getName() + ": " + err.getMessage());
-        //             return;
-        //         }
-        //         System.out.println("Opened database successfully");
-        //     }
-        // });
+                try {
+                    Class.forName("org.postgresql.Driver");
+                    conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+                } catch (Exception err) {
+                    err.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + err.getMessage());
+                    return;
+                }
+                System.out.println("Opened database successfully");
+
+                try {
+                    String sqlQuery = "select * from \"Entrees\"";
+                    Statement stmt = conn.createStatement();
+                    ResultSet result = stmt.executeQuery(sqlQuery);
+                    while (result.next()) {
+                        Vector<String> entry = new Vector<>();
+                        entry.add(result.getString("Entree Items"));
+                        entry.add(result.getString("Entree Inventory"));
+                        inventoryTable.add(entry);
+                        line++;
+                    }
+                    partitions[0] = line;
+        
+                    sqlQuery = "select * from \"Dressings\" where \"Dressing Item\" != 'None'";
+                    stmt = conn.createStatement();
+                    result = stmt.executeQuery(sqlQuery);
+                    while (result.next()) {
+                        Vector<String> entry = new Vector<>();
+                        entry.add(result.getString("Dressing Item"));
+                        entry.add(result.getString("Dressing Inventory"));
+                        inventoryTable.add(entry);
+                        line++;
+                    }
+                    partitions[1] = line;
+        
+                    sqlQuery = "select * from \"Drinks\" where \"Drink Item\" != 'None'";
+                    stmt = conn.createStatement();
+                    result = stmt.executeQuery(sqlQuery);
+                    while (result.next()) {
+                        Vector<String> entry = new Vector<>();
+                        entry.add(result.getString("Drink Item"));
+                        entry.add(result.getString("Drink Inventory"));
+                        inventoryTable.add(entry);
+                        line++;
+                    }
+                    partitions[2] = line;
+        
+                    sqlQuery = "select * from \"Starters\" where \"Starter Item\" != 'None'";
+                    stmt = conn.createStatement();
+                    result = stmt.executeQuery(sqlQuery);
+                    while (result.next()) {
+                        Vector<String> entry = new Vector<>();
+                        entry.add(result.getString("Starter Item"));
+                        entry.add(result.getString("Starter Inventory"));
+                        inventoryTable.add(entry);
+                        line++;
+                    }
+                    partitions[3] = line;
+        
+                    sqlQuery = "select * from \"Toppings\" where \"Topping Item\" != 'None'";
+                    stmt = conn.createStatement();
+                    result = stmt.executeQuery(sqlQuery);
+                    while (result.next()) {
+                        Vector<String> entry = new Vector<>();
+                        entry.add(result.getString("Topping Item"));
+                        entry.add(result.getString("Topping Inventory"));
+                        inventoryTable.add(entry);
+                    }
+                } catch (Exception e) {
+                    // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                    return 2;
+                }
+                // System.out.println("Passed query successfully");
+        
+                try {
+                    conn.close();
+                    // System.out.println("Connection Closed.");
+                } catch (Exception e) {
+                    // System.out.println("Connection NOT Closed.");
+                }
+            }
+        });
 
         JButton exit = new JButton("Exit to Manager View");
         exit.setBounds(25, 700, 425, 100);
