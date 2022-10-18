@@ -1414,7 +1414,8 @@ public class demo extends JFrame {
         JLabel typeLabel = new JLabel("What type of seasonal item would you like to add?");
         typeLabel.setFont(new Font("Arial",Font.BOLD,20));
         typeLabel.setBounds(250,25,600,50);
-        JComboBox typeBox =new JComboBox(typeStrings);
+        @SuppressWarnings("unchecked")
+        JComboBox typeBox = new JComboBox(typeStrings);
         typeBox.setBounds(350,100,300,50);
         
         JLabel inventoryLabel = new JLabel("How many would you like to add?");
