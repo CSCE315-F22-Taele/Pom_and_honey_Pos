@@ -231,29 +231,28 @@ public class demo extends JFrame {
         });
         viewInventory.setBounds(350, 50, 300, 100);
 
-        // JButton salesReportInput = new JButton("Sales Report");
-        // viewInventory.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         // see inventory screen;
-        //         // sales_report_input();
-        //         frame.setVisible(false);
-                
-        //     }
-        // });
-        // viewInventory.setBounds(350, 50, 300, 100);
+        JButton salesReportInput = new JButton("Sales Report");
+        salesReportInput.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //see sales input and table page
+                sales_report_input();
+                frame.setVisible(false);
+            }
+        });
+        salesReportInput.setBounds(350, 175, 300, 100);
 
-        // JButton excessReportInput = new JButton("Excess Report");
-        // viewInventory.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         // see inventory screen;
-        //         // sales_report_input();
-        //         frame.setVisible(false);
+        JButton excessReportInput = new JButton("Excess Report");
+        viewInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // see inventory screen;
+                // excess_report_input();
+                frame.setVisible(false);
                 
-        //     }
-        // });
-        // viewInventory.setBounds(350, 50, 300, 100);
+            }
+        });
+        viewInventory.setBounds(350, 50, 300, 100);
 
         // JButton restockReport = new JButton("Restock Report");
         // viewInventory.addActionListener(new ActionListener() {
@@ -278,9 +277,8 @@ public class demo extends JFrame {
         });
 
         frame.add(takeOrder);
-        // frame.add(addItem);
         frame.add(viewInventory);
-        // frame.add(salesReportInput);
+        frame.add(salesReportInput);
         // frame.add(excessReportInput);
         // frame.add(restockReport);
         frame.add(addItem);
@@ -442,6 +440,8 @@ public class demo extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // System.out.println("Update " + changes.size());
                 update_inventory(changes);
+                manager_view();
+                frame.setVisible(false);
             }
         });
 
@@ -506,6 +506,81 @@ public class demo extends JFrame {
         return 0;
     }
 
+    public static void sales_report_input() {
+        JFrame frame = new JFrame("SALES REPORT: INPUT");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JLabel dateLabel1 = new JLabel("Enter in the beginning date (yyyy-mm-dd format): ");
+        dateLabel1.setBounds(50, 20, 450, 200);
+        dateLabel1.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JTextField date1 = new JTextField();
+        date1.setBounds(450, 110, 200, 25);
+        date1.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JLabel dateLabel2 = new JLabel("Enter in the ending date (yyyy-mm-dd format): ");
+        dateLabel2.setBounds(50, 70, 450, 200);
+        dateLabel2.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        JTextField date2 = new JTextField();
+        date2.setBounds(450, 160, 200, 25);
+        date2.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JButton salesReport = new JButton("Generate Sales Report");// if pressed pos displays sales_report
+        salesReport.setBackground(Color.BLUE);
+        salesReport.setBounds(700, 105, 225, 80);
+        salesReport.setFont(new Font("Arial", Font.BOLD, 17));
+        // salesReport.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         //month1.getText(), day1.getText(), year1.getText(), month2.getText(), day2.getText(), year2.getText()
+        //         Connection conn = null;
+        //         String teamNumber = "14";
+        //         String sectionNumber = "912";
+        //         String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        //         String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+
+        //         try {
+        //             Class.forName("org.postgresql.Driver");
+        //             conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        //         } catch (Exception err) {
+        //             err.printStackTrace();
+        //             System.err.println(e.getClass().getName() + ": " + err.getMessage());
+        //             return;
+        //         }
+        //         System.out.println("Opened database successfully");
+        //     }
+        // });
+
+        JButton exit = new JButton("Exit to Manager View");
+        exit.setBounds(25, 700, 425, 100);
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                manager_view();
+                frame.setVisible(false);
+            }
+        });
+
+        frame.add(dateLabel1);
+        frame.add(date1);
+        frame.add(dateLabel2);
+        frame.add(date2);
+        frame.add(salesReport);
+        frame.add(exit);
+        frame.setSize(1000,1000);
+        frame.setLayout(null);
+        frame.setVisible(true);
+    }
+
+    public static void excess_report_input() {
+        JFrame frame = new JFrame("EXCESS REPORT: INPUT");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        frame.setSize(1000,1000);
+        frame.setLayout(null);
+        frame.setVisible(true);
+    }
 
     /**
      * Loads the entree screen
@@ -1329,55 +1404,7 @@ public class demo extends JFrame {
         frame.setVisible(true); // making the frame visible
     }
     
-    // public static void sales_report_input() {
-    //     JFrame frame = new JFrame("SALES REPORT: INPUT");
-    //     frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-    //     JLabel dateLabel1 = new JLabel("Enter in the beginning date:");
-    //     UtilDateModel startDateModel = new UtilDateModel();
-    //     startDateModel.setDate(2022,8,1);
-    //     startDateModel.setSelected(true);
-    //     JDatePanelImpl startDatePanel = new JDatePanelImpl(startDateModel);
-    //     JDatePickerImpl startDatePicker = new JDatePanelPickerImpl(startDatePanel, new DateLabelFormatter());
-
-    //     JLabel dateLabel2 = new JLabel("Enter in the ending date:");
-    //     UtilDateModel endDateModel = new UtilDateModel();
-    //     endDateModel.setDate(2022,8,20);
-    //     endDateModel.setSelected(true);
-    //     JDatePanelImpl endDatePanel = new JDatePanelImpl(endDateModel);
-    //     JDatePickerImpl endDatePicker = new JDatePickerImpl(endDatePicker, new DateLabelFormatter());
-
-    //     JButton salesReport = new JButton("Sales Report");// if pressed pos displays menu_screen
-    //     salesReport.setBounds(50, 50, 825, 200);
-    //     salesReport.setFont(new Font("Arial", Font.BOLD, 40));
-    //     salesReport.addActionListener(new ActionListener() {
-    //         @Override
-    //         public void actionPerformed(ActionEvent e) {
-    //             Date startingDate = (Date) startDatePicker.getModel().getValue();
-    //             Date endingDate = (Date) endDatePicker.getModel().getValue();
-    //             sales_report();
-    //             frame.setVisible(false);
-    //         }
-    //     });
-
-    //     frame.add(dateLabel1);
-    //     frame.add(startDatePicker);
-    //     frame.add(dateLabel2);
-    //     frame.add(endDatePicker);
-
-    //     frame.setSize(1000,1000);
-    //     frame.setLayout(null);
-    //     frame.setVisible(true);
-    // }
-
-    public static void sales_report() {
-        JFrame frame = new JFrame("SALES REPORT");
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
-        frame.setSize(1000,1000);
-        frame.setLayout(null);
-        frame.setVisible(true);
-    }
+    
 
     public static void seasonal_item(){
         JFrame frame = new JFrame("ADD SEASONAL ITEM");
