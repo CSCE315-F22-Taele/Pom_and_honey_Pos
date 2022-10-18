@@ -53,6 +53,50 @@ public class jdbcpostgreSQL {
 
         return 0;
     }
+    public static int seasonalQuery(String sqlQuery){
+        //drop stuff from current table
+        orderQuery("DELETE FROM \"PromotionalItem\"");
+        return orderQuery(sqlQuery);
+    }
+    public static int seasonalCountQuery(){
+        int count=0;
+        Connection conn = null;
+        String teamNumber = "14";
+        String sectionNumber = "912";
+        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+        dbSetup myCredentials = new dbSetup();
+
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return 1;
+        }
+        System.out.println("Opened database successfully");
+
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery("SELECT COUNT(*) AS total FROM \"PromotionalItem\"");
+            result.next();
+            count=result.getInt("total");
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return 2;
+        }
+        System.out.println("Passed query successfully");
+
+        try {
+            conn.close();
+            System.out.println("Connection Closed.");
+        } catch (Exception e) {
+            System.out.println("Connection NOT Closed.");
+        } // end try catch
+
+        return count;
+    }
 
     // Commands to run this script
     // This will compile all java files in this directory

@@ -36,7 +36,12 @@ public class entree {
     }
 
     public void setProtein(int protein) {
-        this.proteins = proteinTypes[protein];
+        if(protein<0){
+            this.proteins="Seasonal";
+        }
+        else{
+            this.proteins = proteinTypes[protein];
+        }
     }
 
     public String getProtein() {

@@ -20,7 +20,12 @@ public class order {
     
     public order(int entreeId) {
         this.entreeId = entreeId;
-        if (entreeId < 20) {
+        if(entreeId<0){
+            entreeId*=-1;
+            orderEntree=new entree(entreeId/5);
+            orderEntree.setProtein(-1);
+        }
+        else if (entreeId < 20) {
             orderEntree = new entree(entreeId / 5);
             orderEntree.setProtein(entreeId % 5);
         } else if (entreeId == 20) {

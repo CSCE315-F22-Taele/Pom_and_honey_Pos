@@ -19,7 +19,10 @@ public class drink {
 
     public void setFlavor(int flavorId) { // we should only need to use this to change everything
         this.flavorId = flavorId;
-        if (flavorId == 1) {
+        if(flavorId==-1){
+            this.flavor="Seasonal";
+        }
+        else if (flavorId == 1) {
             this.flavor = flavorOptions[1];
         } else if (flavorId == 2) {
             this.flavor = flavorOptions[2];

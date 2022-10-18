@@ -1,6 +1,7 @@
 /**@author
  * Nick, Aadith, Ismat, Nebiyou
 **/
+import java.sql.*;
 public class starter {
     private String itemName;
     private int itemId;
@@ -22,11 +23,53 @@ public class starter {
     }
 
     public void setItemName(int itemId) {
-        itemName = starterOptions[itemId];
+        if(itemId==-1){
+            itemName="Seasonal";
+        }
+        else{
+            itemName = starterOptions[itemId];
+        }
     }
 
     public void setprice(int itemId) {
+        if(itemId<0){
+            getSeasonalPrice();
+            return;
+        }
         price = prices[itemId];
+    }
+    public void getSeasonalPrice(){
+        Connection conn = null;
+        String teamNumber = "14";
+        String sectionNumber = "912";
+        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+
+        // Connecting to the database
+        try {
+            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+
+        try {        
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM \"PromotionalItem\"");
+            rs.next();
+            price=rs.getDouble("Item Price");
+
+        } catch (Exception e) {
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        try {
+            conn.close();
+            // System.out.println("Connection Closed.");
+        } catch (Exception e) {
+            // System.out.println("Connection NOT Closed.");
+        }
     }
 
     public String getItem() {
