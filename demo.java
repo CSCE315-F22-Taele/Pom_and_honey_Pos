@@ -659,7 +659,7 @@ public class demo extends JFrame {
             System.err.println(err.getClass().getName() + ": " + err.getMessage());
             return false; 
         }
-        System.out.println("Opened database successfully");
+        //System.out.println("Opened database successfully");
         try {
             String sqlQuery = "SELECT  \"Entrees\".\"Entree Items\", count(\"Order ID\") From \"Order\" Inner Join \"Entrees\" on \"Order\".\"Entree ID\" = \"Entrees\".\"Entree ID\" where \"Date\"  between '2022-08-01' And '2022-08-04' group by \"Entrees\".\"Entree Items\" order by \"Entrees\".\"Entree Items\"";
             Statement stmt = conn.createStatement();
@@ -1537,7 +1537,7 @@ public class demo extends JFrame {
             }
         });
 
-        JButton toppings = new JButton("Return to Toppings & Drinks");
+        JButton toppings = new JButton("Return to Toppings & Dressings");
         toppings.setBounds(25, 700, 425, 100);
         toppings.addActionListener(new ActionListener() {
             @Override

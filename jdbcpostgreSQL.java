@@ -33,7 +33,7 @@ public class jdbcpostgreSQL {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             return 1;
         }
-        System.out.println("Opened database successfully");
+        //System.out.println("Opened database successfully");
 
         try {
             Statement stmt = conn.createStatement();
@@ -42,13 +42,13 @@ public class jdbcpostgreSQL {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             return 2;
         }
-        System.out.println("Passed query successfully");
+        //System.out.println("Passed query successfully");
 
         try {
             conn.close();
-            System.out.println("Connection Closed.");
+            //System.out.println("Connection Closed.");
         } catch (Exception e) {
-            System.out.println("Connection NOT Closed.");
+            //System.out.println("Connection NOT Closed.");
         } // end try catch
 
         return 0;
@@ -75,7 +75,7 @@ public class jdbcpostgreSQL {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             return 1;
         }
-        System.out.println("Opened database successfully");
+        //System.out.println("Opened database successfully");
 
         try {
             Statement stmt = conn.createStatement();
@@ -86,13 +86,13 @@ public class jdbcpostgreSQL {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             return 2;
         }
-        System.out.println("Passed query successfully");
+        //System.out.println("Passed query successfully");
 
         try {
             conn.close();
-            System.out.println("Connection Closed.");
+            //System.out.println("Connection Closed.");
         } catch (Exception e) {
-            System.out.println("Connection NOT Closed.");
+            //System.out.println("Connection NOT Closed.");
         } // end try catch
 
         return count;
@@ -125,7 +125,7 @@ public class jdbcpostgreSQL {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        System.out.println("Opened database successfully");
+        //System.out.println("Opened database successfully");
 
         // String items = "";
         // try {
@@ -343,9 +343,9 @@ public class jdbcpostgreSQL {
         // closing the connection
         try {
         conn.close();
-        System.out.println("Connection Closed.");
+        //System.out.println("Connection Closed.");
         } catch (Exception e) {
-        System.out.println("Connection NOT Closed.");
+        //System.out.println("Connection NOT Closed.");
         } // end try catch
     }// end main
 }// end Class

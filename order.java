@@ -32,7 +32,7 @@ public class order {
             orderEntree = new entree(4);
             orderEntree.setProtein(0);
         } else {
-            System.out.println("Error invalid entree");
+            //System.out.println("Error invalid entree");
         }
         total += 7.69;
         orderDrink = new drink(0);
