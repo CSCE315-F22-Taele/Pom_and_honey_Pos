@@ -81,14 +81,15 @@ public class demo extends JFrame {
                 } else if (tblName.equals("Toppings")) {
                     sqlStatement = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
                 } else if(tblName.equals("PromotionalItem")){
-                    sqlStatement = "UPDATE \"PromotionalItem\" SET \"Item Inventory\"=" + stock + " WHERE \"Promotional Item Name\"='" + item + "'";
+                    sqlStatement = "UPDATE \"PromotionalItem\" SET \"Item inventory\"=" + stock + " WHERE \"Promotional Item Name\"='" + item + "'";
+                    // System.out.println(sqlStatement);
                 }
                 else{
-                    System.out.println("Theres a typo");
+                    // System.out.println("Theres a typo");
                 }
                 
                 stmt.executeUpdate(sqlStatement);
-                System.out.println(sqlStatement);
+                // System.out.println(sqlStatement);
             }
         } catch (Exception e) {
             // System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -491,7 +492,7 @@ public class demo extends JFrame {
                 String tblName = "";
                 if(rowChanged >= partitions[4]){
                     tblName = "PromotionalItem";
-                    //System.out.println("Stored line pi " + partitions[4]);
+                    // System.out.println("Stored line " + tblName + " "+ partitions[4]);
                 }else if (rowChanged >= partitions[3]) {
                     tblName = "Toppings";
                     // System.out.println("Stored line topping " + partitions[3]);
@@ -715,7 +716,7 @@ public class demo extends JFrame {
             conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
         } catch (Exception err) {
             err.printStackTrace();
-            System.err.println(err.getClass().getName() + ": " + err.getMessage());
+            // System.err.println(err.getClass().getName() + ": " + err.getMessage());
             return false; 
         }
         //System.out.println("Opened database successfully");
