@@ -2,21 +2,24 @@ import java.sql.*;
 import java.util.*;
 import java.io.File;
 
-/**@author
+/**
+Commands to run this script
+This will compile all java files in this directory javac *.java
+This command tells the file where to find the postgres jar which it needs to
+execute postgres commands, then executes the code
+Windows: java -cp ".;postgresql-42.2.8.jar" jdbcpostgreSQL
+Mac/Linux: java -cp ".:postgresql-42.2.8.jar" jdbcpostgreSQL
+
+MAKE SURE YOU ARE ON VPN or TAMU WIFI TO ACCESS DATABASE
+@author
  * Nick, Aadith, Ismat, Nebiyou
 **/
-
-/*
-CSCE 315
-9-27-2021 Lab
-*/
 public class jdbcpostgreSQL {
     /**
-     * 
-     * @param sqlQuery
-     * @return
+     * This function executes the database query that creates an order after the POS user has completed the payment process
+     * @param sqlQuery database query for creating an order from the GUI
+     * @return integer value for validation
      */
-
     public static int orderQuery(String sqlQuery) {
         Connection conn = null;
         String teamNumber = "14";
@@ -53,11 +56,22 @@ public class jdbcpostgreSQL {
 
         return 0;
     }
+    
+    /**
+    * Deletes the the old promotional item and adds the new one 
+    * @param sqlQuery the query for the new promotional item 
+    * @return integer for input validation
+    */
     public static int seasonalQuery(String sqlQuery){
         //drop stuff from current table
         orderQuery("DELETE FROM \"PromotionalItem\"");
         return orderQuery(sqlQuery);
     }
+    
+    /**
+     * Checks to make sure that there is a seasonal item and returns the count
+     * @return integer for validation
+     */
     public static int seasonalCountQuery(){
         int count=0;
         Connection conn = null;
@@ -97,16 +111,6 @@ public class jdbcpostgreSQL {
 
         return count;
     }
-
-    // Commands to run this script
-    // This will compile all java files in this directory
-    // javac *.java
-    // This command tells the file where to find the postgres jar which it needs to
-    // execute postgres commands, then executes the code
-    // Windows: java -cp ".;postgresql-42.2.8.jar" jdbcpostgreSQL
-    // Mac/Linux: java -cp ".:postgresql-42.2.8.jar" jdbcpostgreSQL
-
-    // MAKE SURE YOU ARE ON VPN or TAMU WIFI TO ACCESS DATABASE
     public static void main(String args[]) {
 
         // Building the connection with your credentials
