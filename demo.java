@@ -28,6 +28,10 @@ public class demo extends JFrame {
     public static String seasonalName="";
     public static Boolean seasonalExists=false;
     
+    private static Color deepRed= new Color(125,5,30);
+    private static Color darkGreen= new Color(15,75,5);
+    private static Color lightBlue= new Color(130,200,210);
+    
     /**
     * Helper function for view/edit inventory screen that updates the inventory
      */
@@ -76,10 +80,15 @@ public class demo extends JFrame {
                     sqlStatement = "UPDATE \"Starters\" SET \"Starter Inventory\"=" + stock + " WHERE \"Starter Item\"='" + item + "'";
                 } else if (tblName.equals("Toppings")) {
                     sqlStatement = "UPDATE \"Toppings\" SET \"Topping Inventory\"=" + stock + " WHERE \"Topping Item\"='" + item + "'";
+                } else if(tblName.equals("PromotionalItem")){
+                    sqlStatement = "UPDATE \"PromotionalItem\" SET \"Item Inventory\"=" + stock + " WHERE \"Promotional Item Name\"='" + item + "'";
+                }
+                else{
+                    System.out.println("Theres a typo");
                 }
                 
                 stmt.executeUpdate(sqlStatement);
-                // System.out.println(sqlQuery);
+                System.out.println(sqlStatement);
             }
         } catch (Exception e) {
             // System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -124,6 +133,8 @@ public class demo extends JFrame {
         });
 
         JButton submitIDButton = new JButton("Submit");
+        submitIDButton.setBackground(darkGreen);
+        submitIDButton.setForeground(Color.white);
         submitIDButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -167,6 +178,7 @@ public class demo extends JFrame {
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JButton takeOrder = new JButton("Take Order");
+        takeOrder.setBackground(lightBlue);
         takeOrder.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -178,6 +190,7 @@ public class demo extends JFrame {
         takeOrder.setBounds(25, 50, 300, 100);
 
         JButton addItem = new JButton("Add Seasonal Item");
+        addItem.setBackground(lightBlue);
         addItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -190,6 +203,7 @@ public class demo extends JFrame {
         addItem.setBounds(675, 50, 300, 100);
 
         JButton clearItem = new JButton("Remove Seasonal Item");
+        clearItem.setBackground(lightBlue);
         clearItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -201,6 +215,7 @@ public class demo extends JFrame {
         clearItem.setBounds(675, 175, 300, 100);
         
         JButton viewInventory = new JButton("View Inventory");
+        viewInventory.setBackground(lightBlue);
         viewInventory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -213,6 +228,7 @@ public class demo extends JFrame {
         viewInventory.setBounds(350, 50, 300, 100);
 
         JButton salesReportInput = new JButton("Sales Report");
+        salesReportInput.setBackground(lightBlue);
         salesReportInput.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -224,6 +240,7 @@ public class demo extends JFrame {
         salesReportInput.setBounds(350, 175, 300, 100);
 
         JButton excessReportInput = new JButton("Excess Report");
+        excessReportInput.setBackground(lightBlue);
         excessReportInput.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -236,6 +253,7 @@ public class demo extends JFrame {
         excessReportInput.setBounds(25, 175, 300, 100);
 
         JButton restockReport = new JButton("Restock Report");
+        restockReport.setBackground(lightBlue);
         restockReport.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -248,6 +266,8 @@ public class demo extends JFrame {
         restockReport.setBounds(25, 300, 300, 100);
 
         JButton exit = new JButton("Exit to Main Screen");
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
         exit.setBounds(25, 700, 425, 100);
         exit.addActionListener(new ActionListener() {
             @Override
@@ -282,6 +302,7 @@ public class demo extends JFrame {
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JButton takeOrder = new JButton("Take Order");
+        takeOrder.setBackground(lightBlue);
         takeOrder.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -293,6 +314,8 @@ public class demo extends JFrame {
         takeOrder.setBounds(250, 250, 450, 150);
 
         JButton exit = new JButton("Exit to Main Screen");
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
         exit.setBounds(25, 700, 425, 100);
         exit.addActionListener(new ActionListener() {
             @Override
@@ -334,7 +357,7 @@ public class demo extends JFrame {
         // System.out.println("Opened database successfully");
 
         Vector<Vector<String>> inventoryTable = new Vector<>();
-        int[] partitions = new int[4];
+        int[] partitions = new int[5];
         int line = 0;
         try {
             String sqlQuery = "select * from \"Entrees\"";
@@ -344,6 +367,7 @@ public class demo extends JFrame {
                 Vector<String> entry = new Vector<>();
                 entry.add(result.getString("Entree Items"));
                 entry.add(result.getString("Entree Inventory"));
+                // result.getString() convert to int and then check if less than amount
                 inventoryTable.add(entry);
                 line++;
             }
@@ -393,6 +417,18 @@ public class demo extends JFrame {
                 entry.add(result.getString("Topping Item"));
                 entry.add(result.getString("Topping Inventory"));
                 inventoryTable.add(entry);
+                line++;
+            }
+            partitions[4] = line;
+            
+            sqlQuery = "select * from \"PromotionalItem\"";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Promotional Item Name"));
+                entry.add(result.getString("Item Inventory"));
+                inventoryTable.add(entry);
             }
         } catch (Exception e) {
             // System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -409,6 +445,8 @@ public class demo extends JFrame {
         
         Vector<Vector<String>> changes = new Vector<>();
         JButton exit = new JButton("Exit to Manager Screen");
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
         exit.setBounds(0, 800, 500, 100);
         exit.addActionListener(new ActionListener() {
             @Override
@@ -418,6 +456,8 @@ public class demo extends JFrame {
             }
         });
         JButton update = new JButton("Update inventory changes");
+        update.setBackground(darkGreen);
+        update.setForeground(Color.white);
         update.setBounds(500, 800, 500, 100);
         update.addActionListener(new ActionListener() {
             @Override
@@ -448,8 +488,12 @@ public class demo extends JFrame {
                 
                 int rowChanged = e.getFirstRow();
                 String tblName = "";
-                if (rowChanged >= partitions[3]) {
+                if(rowChanged >= partitions[4]){
+                    tblName = "PromotionalItem";
+                    // System.out.println("Stored line pi " + partitions[4]);
+                }else if (rowChanged >= partitions[3]) {
                     tblName = "Toppings";
+                    // System.out.println("Stored line topping " + partitions[3]);
                 } else if (rowChanged >= partitions[2]) {
                     tblName = "Starters";
                 } else if (rowChanged >= partitions[1]) {
@@ -462,6 +506,7 @@ public class demo extends JFrame {
                 Vector<String> entryChange = new Vector<>();
                 String item = inventoryTable.get(rowChanged).get(0);
                 String stock = inventoryTable.get(rowChanged).get(1);
+                
                 entryChange.add(tblName);
                 entryChange.add(item);
                 entryChange.add(stock);
@@ -516,7 +561,8 @@ public class demo extends JFrame {
         date2.setFont(new Font("Arial", Font.BOLD, 16));
 
         JButton salesReport = new JButton("Generate Sales Report");// if pressed pos displays sales_report
-        salesReport.setBackground(Color.BLUE);
+        salesReport.setBackground(darkGreen);
+        salesReport.setForeground(Color.white);
         salesReport.setBounds(700, 105, 225, 80);
         salesReport.setFont(new Font("Arial", Font.BOLD, 17));
         salesReport.addActionListener(new ActionListener() {
@@ -555,7 +601,7 @@ public class demo extends JFrame {
                         inventoryTable.add(entry);
                     }
 
-                    sqlQuery = "SELECT  \"Dressings\".\"Dressing Item\", count(\"Order ID\") From \"Order\" Inner Join \"Dressings\" on \"Order\".\"Dressing ID\" = \"Dressings\".\"Dressing ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Dressings\".\"Dressing Item\" order by \"Dressings\".\"Dressing Item\"";
+                    sqlQuery = "SELECT  \"Dressings\".\"Dressing Item\", count(\"Order ID\") From \"Order\" Inner Join \"Dressings\" on \"Order\".\"Dressing ID\" = \"Dressings\".\"Dressing ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Dressing Item\"!='None' group by \"Dressings\".\"Dressing Item\" order by \"Dressings\".\"Dressing Item\"";
                     stmt = conn.createStatement();
                     result = stmt.executeQuery(sqlQuery);
                     while (result.next()) {
@@ -565,7 +611,7 @@ public class demo extends JFrame {
                         inventoryTable.add(entry);
                     }
 
-                    sqlQuery = "SELECT  \"Drinks\".\"Drink Item\", count(\"Order ID\") From \"Order\" Inner Join \"Drinks\" on \"Order\".\"Drinks ID\" = \"Drinks\".\"Drink ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Drinks\".\"Drink Item\" order by \"Drinks\".\"Drink Item\"";
+                    sqlQuery = "SELECT  \"Drinks\".\"Drink Item\", count(\"Order ID\") From \"Order\" Inner Join \"Drinks\" on \"Order\".\"Drinks ID\" = \"Drinks\".\"Drink ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Drink Item\"!='None' group by \"Drinks\".\"Drink Item\" order by \"Drinks\".\"Drink Item\"";
                     stmt = conn.createStatement();
                     result = stmt.executeQuery(sqlQuery);
                     while (result.next()) {
@@ -575,12 +621,22 @@ public class demo extends JFrame {
                         inventoryTable.add(entry);
                     }
 
-                    sqlQuery = "SELECT  \"Starters\".\"Starter Item\", count(\"Order ID\") From \"Order\" Inner Join \"Starters\" on \"Order\".\"Starter ID\" = \"Starters\".\"Starter ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Starters\".\"Starter Item\" order by \"Starters\".\"Starter Item\"";
+                    sqlQuery = "SELECT  \"Starters\".\"Starter Item\", count(\"Order ID\") From \"Order\" Inner Join \"Starters\" on \"Order\".\"Starter ID\" = \"Starters\".\"Starter ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Starter Item\"!='None' group by \"Starters\".\"Starter Item\" order by \"Starters\".\"Starter Item\"";
                     stmt = conn.createStatement();
                     result = stmt.executeQuery(sqlQuery);
                     while (result.next()) {
                         Vector<String> entry = new Vector<>();
                         entry.add(result.getString("Starter Item"));
+                        entry.add(result.getString("count"));
+                        inventoryTable.add(entry);
+                    }
+
+                    sqlQuery = "SELECT  \"Toppings\".\"Topping Item\", count(\"Order ID\") From \"Order\" Inner Join \"Toppings\" on \"Order\".\"Topping IDs\"[1] = \"Toppings\".\"Topping ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Topping Item\"!='None' group by \"Toppings\".\"Topping Item\" order by \"Toppings\".\"Topping Item\"";
+                    stmt = conn.createStatement();
+                    result = stmt.executeQuery(sqlQuery);
+                    while (result.next()) {
+                        Vector<String> entry = new Vector<>();
+                        entry.add(result.getString("Topping Item"));
                         entry.add(result.getString("count"));
                         inventoryTable.add(entry);
                     }
@@ -612,6 +668,8 @@ public class demo extends JFrame {
         });
 
         JButton exit = new JButton("Exit to Manager View");
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
         exit.setBounds(25, 700, 425, 100);
         exit.addActionListener(new ActionListener() {
             @Override
@@ -637,7 +695,7 @@ public class demo extends JFrame {
      * 
      * @param start start date in 'yyyy-mm-dd' format
      * @param end end date in 'yyyy-mm-dd' format
-     * @return boolean showing whether the dates are valid
+     * @return boolean showing whether the dates are a valid range
      * 
      */
     public static boolean verifyDates(String start, String end) {
@@ -704,34 +762,94 @@ public class demo extends JFrame {
         date1.setFont(new Font("Arial", Font.BOLD, 16));
 
         JButton excessReport = new JButton("Generate Excess Report");// if pressed pos displays sales_report
-        excessReport.setBackground(Color.BLUE);
+        excessReport.setBackground(darkGreen);
+        excessReport.setForeground(Color.white);
         excessReport.setBounds(625, 95, 220, 50);
         excessReport.setFont(new Font("Arial", Font.BOLD, 17));
-        // excessReport.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         //month1.getText(), day1.getText(), year1.getText(), month2.getText(), day2.getText(), year2.getText()
-        //         Connection conn = null;
-        //         String teamNumber = "14";
-        //         String sectionNumber = "912";
-        //         String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
-        //         String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+        // Connection conn = null;
+        // String teamNumber = "14";
+        // String sectionNumber = "912";
+        // String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        // String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
 
-        //         try {
-        //             Class.forName("org.postgresql.Driver");
-        //             conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
-        //         } catch (Exception err) {
-        //             err.printStackTrace();
-        //             System.err.println(e.getClass().getName() + ": " + err.getMessage());
-        //             return;
-        //         }
-        //         System.out.println("Opened database successfully");
+        // try {
+        //     Class.forName("org.postgresql.Driver");
+        //     conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        // } catch (Exception err) {
+        //     err.printStackTrace();
+        //     // System.err.println(err.getClass().getName() + ": " + err.getMessage());
+        //     return;
+        // }
+        // // System.out.println("Opened database successfully");
 
-
+        // try {
+        //     String sqlQuery = "SELECT  \"Entrees\".\"Entree Items\", count(\"Order ID\") From \"Order\" Inner Join \"Entrees\" on \"Order\".\"Entree ID\" = \"Entrees\".\"Entree ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' group by \"Entrees\".\"Entree Items\" order by \"Entrees\".\"Entree Items\"";
+        //     Statement stmt = conn.createStatement();
+        //     ResultSet result = stmt.executeQuery(sqlQuery);
+        //     while (result.next()) {
+        //         Vector<String> entry = new Vector<>();
+        //         entry.add(result.getString("Entree Items"));
+        //         entry.add(result.getString("count"));
+        //         inventoryTable.add(entry);
         //     }
-        // });
+
+        //     sqlQuery = "SELECT  \"Dressings\".\"Dressing Item\", count(\"Order ID\") From \"Order\" Inner Join \"Dressings\" on \"Order\".\"Dressing ID\" = \"Dressings\".\"Dressing ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Dressing Item\"!='None' group by \"Dressings\".\"Dressing Item\" order by \"Dressings\".\"Dressing Item\"";
+        //     stmt = conn.createStatement();
+        //     result = stmt.executeQuery(sqlQuery);
+        //     while (result.next()) {
+        //         Vector<String> entry = new Vector<>();
+        //         entry.add(result.getString("Dressing Item"));
+        //         entry.add(result.getString("count"));
+        //         inventoryTable.add(entry);
+        //     }
+
+        //     sqlQuery = "SELECT  \"Drinks\".\"Drink Item\", count(\"Order ID\") From \"Order\" Inner Join \"Drinks\" on \"Order\".\"Drinks ID\" = \"Drinks\".\"Drink ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Drink Item\"!='None' group by \"Drinks\".\"Drink Item\" order by \"Drinks\".\"Drink Item\"";
+        //     stmt = conn.createStatement();
+        //     result = stmt.executeQuery(sqlQuery);
+        //     while (result.next()) {
+        //         Vector<String> entry = new Vector<>();
+        //         entry.add(result.getString("Drink Item"));
+        //         entry.add(result.getString("count"));
+        //         inventoryTable.add(entry);
+        //     }
+
+        //     sqlQuery = "SELECT  \"Starters\".\"Starter Item\", count(\"Order ID\") From \"Order\" Inner Join \"Starters\" on \"Order\".\"Starter ID\" = \"Starters\".\"Starter ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Starter Item\"!='None' group by \"Starters\".\"Starter Item\" order by \"Starters\".\"Starter Item\"";
+        //     stmt = conn.createStatement();
+        //     result = stmt.executeQuery(sqlQuery);
+        //     while (result.next()) {
+        //         Vector<String> entry = new Vector<>();
+        //         entry.add(result.getString("Starter Item"));
+        //         entry.add(result.getString("count"));
+        //         inventoryTable.add(entry);
+        //     }
+
+        //     sqlQuery = "SELECT  \"Toppings\".\"Topping Item\", count(\"Order ID\") From \"Order\" Inner Join \"Toppings\" on \"Order\".\"Topping IDs\"[1] = \"Toppings\".\"Topping ID\" where \"Date\"  between '" + date1.getText() + "' And '" + date2.getText() + "' and \"Topping Item\"!='None' group by \"Toppings\".\"Topping Item\" order by \"Toppings\".\"Topping Item\"";
+        //     stmt = conn.createStatement();
+        //     result = stmt.executeQuery(sqlQuery);
+        //     while (result.next()) {
+        //         Vector<String> entry = new Vector<>();
+        //         entry.add(result.getString("Topping Item"));
+        //         entry.add(result.getString("count"));
+        //         inventoryTable.add(entry);
+        //     }
+        // } catch (Exception ex) {
+        //     // System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+        //     return;
+        // }
+        // // System.out.println("Passed query successfully");
+        
+        // try {
+        //     conn.close();
+        //     // System.out.println("Connection Closed.");
+        // } catch (Exception ex) {
+        //     // System.out.println("Connection NOT Closed.");
+        //     return;
+        // }
+
 
         JButton exit = new JButton("Exit to Manager View");
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
         exit.setBounds(25, 700, 425, 100);
         exit.addActionListener(new ActionListener() {
             @Override
@@ -759,15 +877,110 @@ public class demo extends JFrame {
         JLabel restockTitle = new JLabel("Items to restock ");
         restockTitle.setBounds(375, 20, 600, 180);
         restockTitle.setFont(new Font("Arial", Font.BOLD, 25));
+                
+        Connection conn = null;
+        String teamNumber = "14";
+        String sectionNumber = "912";
+        String dbName = "csce315_" + sectionNumber + "_" + teamNumber;
+        String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
 
-        // ------ Restock function here ------
-        /*
-        
-        */
-        
-        
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection(dbConnectionString, dbSetup.user, dbSetup.pswd);
+        } catch (Exception err) {
+            err.printStackTrace();
+            return;
+        }
+            
+        Vector<Vector<String>> inventoryTable = new Vector<>();
+
+        try {
+            String sqlQuery = "select * from \"Entrees\"";
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Entree Items"));
+                entry.add(result.getString("Entree Inventory"));
+                int curr = Integer.parseInt(result.getString("Entree Inventory")); 
+                if(curr<200){
+                    inventoryTable.add(entry);
+                }
+            }
+
+            sqlQuery = "select * from \"Dressings\" where \"Dressing Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Dressing Item"));
+                entry.add(result.getString("Dressing Inventory"));
+                int curr = Integer.parseInt(result.getString("Dressing Inventory")); 
+                if(curr<200){
+                    inventoryTable.add(entry);
+                }
+            }
+
+            sqlQuery = "select * from \"Drinks\" where \"Drink Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Drink Item"));
+                entry.add(result.getString("Drink Inventory"));
+                int curr = Integer.parseInt(result.getString("Drink Inventory")); 
+                if(curr<200){
+                    inventoryTable.add(entry);
+                }
+            }
+
+            sqlQuery = "select * from \"Starters\" where \"Starter Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Starter Item"));
+                entry.add(result.getString("Starter Inventory"));
+                int curr = Integer.parseInt(result.getString("Starter Inventory")); 
+                if(curr<200){
+                    inventoryTable.add(entry);
+                }
+            }
+
+            sqlQuery = "select * from \"Toppings\" where \"Topping Item\" != 'None'";
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sqlQuery);
+            while (result.next()) {
+                Vector<String> entry = new Vector<>();
+                entry.add(result.getString("Topping Item"));
+                entry.add(result.getString("Topping Inventory"));
+                int curr = Integer.parseInt(result.getString("Topping Inventory")); 
+                if(curr<200){
+                    inventoryTable.add(entry);
+                }
+            }
+        } catch (Exception e) {
+            // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return;
+        }
+        // System.out.println("Passed query successfully");
+
+        try {
+            conn.close();
+            // System.out.println("Connection Closed.");
+        } catch (Exception e) {
+            // System.out.println("Connection NOT Closed.");
+        }
+        Vector<String> columnNames = new Vector<>();
+        columnNames.add("Product Item");
+        columnNames.add("Units left in stock");
+
+        DefaultTableModel tableModel = new DefaultTableModel(inventoryTable, columnNames);
+
         JButton exit = new JButton("Exit to Manager View");
-        exit.setBounds(25, 700, 425, 100);
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
+        exit.setBounds(25, 825, 425, 100);
         exit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -776,12 +989,17 @@ public class demo extends JFrame {
             }
         });
 
+        JTable table = new JTable(tableModel);
+        
+        JScrollPane sp = new JScrollPane(table);
+
+        sp.setBounds(50, 200, 900, 475);
         frame.add(restockTitle);
         frame.add(exit);
+        frame.add(sp);
         frame.setSize(1000,1000);
         frame.setLayout(null);
         frame.setVisible(true);
-
     }
 
     /**
@@ -911,7 +1129,7 @@ public class demo extends JFrame {
 
         JButton seasonalPro= new JButton(seasonalName);
         seasonalPro.setBounds(375, 325,150,50);
-        seasonalPro.setBackground(Color.RED);
+        seasonalPro.setBackground(lightBlue);
         seasonalPro.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -977,7 +1195,8 @@ public class demo extends JFrame {
         });
 
         JButton toppings = new JButton("Continue to Toppings & Dressings"); // set it to where some entree has to have
-                                                                            // been selected
+        toppings.setBackground(darkGreen);   
+        toppings.setForeground(Color.white);                                                                 // been selected
         toppings.setBounds(475, 700, 425, 100);
         toppings.addActionListener(new ActionListener() {
             @Override
@@ -994,6 +1213,8 @@ public class demo extends JFrame {
         });
 
         JButton exit = new JButton("Exit to Main Screen");
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
         exit.setBounds(25, 700, 425, 100);
         exit.addActionListener(new ActionListener() {
             @Override
@@ -1050,6 +1271,10 @@ public class demo extends JFrame {
         noTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(0);
                 noTop.setBackground(SystemColor.activeCaption);
             }
@@ -1060,6 +1285,10 @@ public class demo extends JFrame {
         pickOnionTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(1);
                 pickOnionTop.setBackground(SystemColor.activeCaption);
             }
@@ -1070,6 +1299,10 @@ public class demo extends JFrame {
         diceCucumberTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(2);
                 diceCucumberTop.setBackground(SystemColor.activeCaption);
             }
@@ -1080,6 +1313,10 @@ public class demo extends JFrame {
         citCousTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(3);
                 citCousTop.setBackground(SystemColor.activeCaption);
             }
@@ -1090,6 +1327,10 @@ public class demo extends JFrame {
         roastCauliTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(4);
                 roastCauliTop.setBackground(SystemColor.activeCaption);
             }
@@ -1100,6 +1341,10 @@ public class demo extends JFrame {
         tomOnTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(5);
                 tomOnTop.setBackground(SystemColor.activeCaption);
             }
@@ -1110,6 +1355,10 @@ public class demo extends JFrame {
         kalamataTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(6);
                 kalamataTop.setBackground(SystemColor.activeCaption);
             }
@@ -1120,6 +1369,10 @@ public class demo extends JFrame {
         roastPeppTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(7);
                 roastPeppTop.setBackground(SystemColor.activeCaption);
             }
@@ -1130,6 +1383,10 @@ public class demo extends JFrame {
         redCabbTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (theOrder.getNumToppings() >= 4) {
+                    demo.displayMessage("Error: Too Many Toppings!");
+                    return;
+                }
                 theOrder.addTopping(8);
                 redCabbTop.setBackground(SystemColor.activeCaption);
             }
@@ -1303,6 +1560,8 @@ public class demo extends JFrame {
         });
 
         JButton starter = new JButton("Continue to Starters & Drinks");
+        starter.setBackground(darkGreen);   
+        starter.setForeground(Color.white);
         starter.setBounds(475, 700, 425, 100);
         starter.addActionListener(new ActionListener() {
             @Override
@@ -1313,6 +1572,8 @@ public class demo extends JFrame {
         });
 
         JButton entree = new JButton("Return to Entrees");
+        entree.setBackground(deepRed);   
+        entree.setForeground(Color.white);
         entree.setBounds(25, 700, 425, 100);
         entree.addActionListener(new ActionListener() {
             @Override
@@ -1394,7 +1655,7 @@ public class demo extends JFrame {
                 fries.setBackground(null);
             }
         });
-        falStart.setBounds(130, 150, 164, 50);
+        falStart.setBounds(220, 150, 164, 50);
         falStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1406,7 +1667,7 @@ public class demo extends JFrame {
                 fries.setBackground(null);
             }
         });
-        hummus.setBounds(322, 150, 164, 50);
+        hummus.setBounds(412, 150, 164, 50);
         hummus.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1418,7 +1679,7 @@ public class demo extends JFrame {
                 fries.setBackground(null);
             }
         });
-        vegan.setBounds(514, 150, 164, 50);
+        vegan.setBounds(604, 150, 164, 50);
         vegan.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1430,7 +1691,7 @@ public class demo extends JFrame {
                 fries.setBackground(null);
             }
         });
-        fries.setBounds(706, 150, 164, 50);
+        fries.setBounds(796, 150, 164, 50);
         fries.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1443,6 +1704,8 @@ public class demo extends JFrame {
             }
         });
         JButton drinks = new JButton("Continue to Drinks");// go to drink menu
+        drinks.setBackground(darkGreen);   
+        drinks.setForeground(Color.white);
         drinks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1454,12 +1717,23 @@ public class demo extends JFrame {
         JLabel drinksLabel = new JLabel("Select your drink:");
         drinksLabel.setBounds(250, 350, 825, 100);
         drinksLabel.setFont(new Font("Arial", Font.BOLD, 40));
-
+        
+        JButton bottlednone = new JButton("None");
         JButton bottledWaterDrink = new JButton("Bottled Water");
         JButton bottledSodaDrink = new JButton("Bottled Soda");
         JButton fountainSodaDrink = new JButton("Fountain Soda");
 
-        bottledWaterDrink.setBounds(220, 500, 164, 50);
+        bottlednone.setBounds(130, 500, 164, 50);
+        bottlednone.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                theOrder.addDrink(0);
+                bottlednone.setBackground(SystemColor.activeCaption);
+                bottledSodaDrink.setBackground(null);
+                fountainSodaDrink.setBackground(null);
+            }
+        });
+        bottledWaterDrink.setBounds(322, 500, 164, 50);
         bottledWaterDrink.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1469,7 +1743,7 @@ public class demo extends JFrame {
                 fountainSodaDrink.setBackground(null);
             }
         });
-        bottledSodaDrink.setBounds(412, 500, 164, 50);
+        bottledSodaDrink.setBounds(514, 500, 164, 50);
         bottledSodaDrink.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1482,7 +1756,7 @@ public class demo extends JFrame {
 
         JButton seasonalStarter= new JButton(seasonalName);
         seasonalStarter.setBounds(412, 325,164,50);
-        seasonalStarter.setBackground(Color.RED);
+        seasonalStarter.setBackground(lightBlue);
         seasonalStarter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1501,7 +1775,7 @@ public class demo extends JFrame {
 
         JButton seasonalDrink= new JButton(seasonalName);
         seasonalDrink.setBounds(412, 575,164,50);
-        seasonalDrink.setBackground(Color.RED);
+        seasonalDrink.setBackground(lightBlue);
         seasonalDrink.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1516,7 +1790,7 @@ public class demo extends JFrame {
             frame.add(seasonalDrink);
         }
 
-        fountainSodaDrink.setBounds(604, 500, 164, 50);
+        fountainSodaDrink.setBounds(706, 500, 164, 50);
         fountainSodaDrink.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1528,6 +1802,8 @@ public class demo extends JFrame {
         });
 
         JButton payment = new JButton("Continue to Payment");
+        payment.setBackground(darkGreen);   
+        payment.setForeground(Color.white);
         payment.setBounds(475, 700, 425, 100);
         payment.addActionListener(new ActionListener() {
             @Override
@@ -1538,6 +1814,8 @@ public class demo extends JFrame {
         });
 
         JButton toppings = new JButton("Return to Toppings & Dressings");
+        toppings.setBackground(deepRed);   
+        toppings.setForeground(Color.white);
         toppings.setBounds(25, 700, 425, 100);
         toppings.addActionListener(new ActionListener() {
             @Override
@@ -1553,12 +1831,13 @@ public class demo extends JFrame {
         frame.add(payment);
         frame.add(toppings);
 
-        // frame.add(noStarter);
+        frame.add(noStarter);
         frame.add(falStart);
         frame.add(hummus);
         frame.add(vegan);
         frame.add(fries);
         frame.add(drinks);
+        frame.add(bottlednone);
         frame.add(bottledWaterDrink);
         frame.add(bottledSodaDrink);
         frame.add(fountainSodaDrink);
@@ -1597,7 +1876,8 @@ public class demo extends JFrame {
             }
         });
         Color c1 = new Color(0, 255, 0);
-        placeOrder.setBackground(c1);
+        placeOrder.setBackground(darkGreen);
+        placeOrder.setForeground(Color.white);
 
         frame.add(placeOrder);
 
@@ -1618,8 +1898,8 @@ public class demo extends JFrame {
         JLabel typeLabel = new JLabel("What type of seasonal item would you like to add?");
         typeLabel.setFont(new Font("Arial",Font.BOLD,20));
         typeLabel.setBounds(250,25,600,50);
-        @SuppressWarnings("unchecked")
-        JComboBox typeBox = new JComboBox(typeStrings);
+        //@SuppressWarnings("unchecked")
+        JComboBox<String> typeBox = new JComboBox<String>(typeStrings);
         typeBox.setBounds(350,100,300,50);
         
         JLabel inventoryLabel = new JLabel("How many would you like to add?");
@@ -1630,7 +1910,7 @@ public class demo extends JFrame {
 
         JLabel priceLabel = new JLabel("If the item is a Starter please enter a price");
         priceLabel.setFont(new Font("Arial",Font.BOLD,20));
-        priceLabel.setBounds(265,350,600,50);
+        priceLabel.setBounds(290,350,600,50);
         JTextField price = new JTextField(20);
         price.setBounds(350,425,300,50);
 
@@ -1641,6 +1921,8 @@ public class demo extends JFrame {
         name.setBounds(350,575,300,50);
 
         JButton exit = new JButton("Exit to Manager Screen");
+        exit.setBackground(deepRed);   
+        exit.setForeground(Color.white);
         exit.setBounds(0, 800, 500, 100);
         exit.addActionListener(new ActionListener() {
             @Override
@@ -1650,6 +1932,8 @@ public class demo extends JFrame {
             }
         });
         JButton update = new JButton("Add Item");
+        update.setBackground(darkGreen);
+        update.setForeground(Color.white);
         update.setBounds(500, 800, 500, 100);
         update.addActionListener(new ActionListener() {
             @Override
@@ -1730,16 +2014,17 @@ public class demo extends JFrame {
     * Helper function that provides input validation for seasonal item
      */
     public static void validate_seasonal(int error){
-        JFrame frame;
+       // JFrame frame;
         String[] messages= {"Item added successfully", "Please enter a valid amount", "Please enter a valid price","Please enter a name","Successfuly Deleted"};
-        if(error==0||error==4){
+        displayMessage(messages[error]);
+        /*if(error==0||error==4){
             frame=new JFrame("SUCCESS");
         }
         else{
             frame= new JFrame("ERROR!");
-        }
+        }*/
 
-        JLabel msgLabel = new JLabel(messages[error]);
+        /*JLabel msgLabel = new JLabel(messages[error]);
         msgLabel.setFont(new Font("Arial",Font.BOLD,20));
         msgLabel.setBounds(25,50,450,50);
 
@@ -1747,7 +2032,7 @@ public class demo extends JFrame {
 
         frame.setSize(500, 200);
         frame.setLayout(null); // using no layout managers
-        frame.setVisible(true);
+        frame.setVisible(true);*/
     }
     
     /**
@@ -1805,6 +2090,7 @@ public class demo extends JFrame {
         l.setBounds(35,20,280, 40);
         JButton b = new JButton("OK");
         b.setBounds(52,85, 180, 50);
+        b.setBackground(lightBlue);
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1813,11 +2099,13 @@ public class demo extends JFrame {
         });
 
         JPanel p = new JPanel();
+        p.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        w.getContentPane().add(p,"Center");
         p.add(l);
         p.add(b);
         p.setLayout(null);
         
-        w.add(p);
+        //w.add(p);
         w.setSize(300, 150);
         w.setLocation(350, 350);
         w.setVisible(true);
@@ -1825,11 +2113,7 @@ public class demo extends JFrame {
     }
 
     public static void main(String[] args) {
-        // JFrame frame;
         demo.welcome();
-        // frame.setVisible(true);
-        // demo.menu_screen();
-        // frame.setVisible(true);
         
     }
 }

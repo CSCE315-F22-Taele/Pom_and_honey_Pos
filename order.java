@@ -39,6 +39,10 @@ public class order {
         orderStarter = new starter(0);
     }
 
+    public int getNumToppings() {
+        return orderEntree.getNumToppings();
+    }
+
     public void addTopping(int t) {
         orderEntree.addTopping(t);
     }

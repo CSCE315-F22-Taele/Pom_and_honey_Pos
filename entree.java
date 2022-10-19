@@ -35,6 +35,10 @@ public class entree {
         return type;
     }
 
+    public int getNumToppings() {
+        return numToppings;
+    }
+
     public void setProtein(int protein) {
         if(protein<0){
             this.proteins="Seasonal";
