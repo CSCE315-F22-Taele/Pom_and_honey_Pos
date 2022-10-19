@@ -487,10 +487,11 @@ public class demo extends JFrame {
                 }
                 
                 int rowChanged = e.getFirstRow();
+                //System.out.println(rowChanged+"");
                 String tblName = "";
                 if(rowChanged >= partitions[4]){
                     tblName = "PromotionalItem";
-                    // System.out.println("Stored line pi " + partitions[4]);
+                    //System.out.println("Stored line pi " + partitions[4]);
                 }else if (rowChanged >= partitions[3]) {
                     tblName = "Toppings";
                     // System.out.println("Stored line topping " + partitions[3]);
