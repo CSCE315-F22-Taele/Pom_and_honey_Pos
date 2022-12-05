@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.hl": "html",
+        "new": "cpp"
+    }
+}
